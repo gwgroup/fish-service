@@ -30,9 +30,9 @@
 
       body {
         font-size: 12px;
-        margin: 0px 0px 48px 0px;
+        margin: 0px 0px 0px 0px;
         background-color: #e8e8eb;
-        overflow-x: hidden;
+        overflow: hidden;
       }
 
       #open_pump {
@@ -63,19 +63,21 @@
         padding-bottom: 6px;
       }
       #pin_panel {
-        display: flex;
-      }
-      #pin_txt {
-        flex: 1;
-        font-size: 36px;
-        padding: 12px;
-        margin: 12px auto;
-        letter-spacing: 26px;
-        display: block;
-        font-family: fantasy;
-        text-align: center;
+        margin: 12px 0;
+        padding: 6px;
         border: none;
         box-shadow: inset 0px 0px 8px 1px #a5b477;
+      }
+      #pin_txt {
+        font-size: 36px;
+        letter-spacing: 26px;
+        font-family: fantasy;
+        text-align: center;
+        width: 248px;
+        display: block;
+        margin: 0px auto;
+        background-color: transparent;
+        border: none;
       }
       button:disabled {
         opacity: 0.5;
