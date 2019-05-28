@@ -1,6 +1,62 @@
-<html>
+<!DOCTYPE html>
+<html lang="zh-cn">
   <head>
+    <meta charset="utf-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no, viewport-fit=cover"
+    />
     <title>设备控制中心</title>
+    <style>
+      html {
+        font-size: 20px;
+        font-size: 5.33333vw;
+      }
+
+      @media screen and (min-width: 540px) {
+        html {
+          font-size: 28.8px;
+        }
+      }
+
+      * {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        outline: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-size: 12px;
+        margin: 0px 0px 48px 0px;
+        background-color: #e8e8eb;
+        overflow-x: hidden;
+      }
+
+      #open_pump {
+        font-size: 36px;
+        display: block;
+        margin: 24px auto;
+        border-radius: 39px;
+        border: 1px solid #ccc;
+        background-color: green;
+        color: white;
+        padding: 12px;
+      }
+
+      #close_pump {
+          font-size: 36px;
+          display: block;
+          margin: 24px auto;
+          border-radius: 39px;
+          border: 1px solid #ccc;
+          background-color: blue;
+          color: white;
+          padding: 12px;
+      }
+    </style>
     <script src="javascripts/jquery-3.4.1.min.js"></script>
     <script>
       $(function() {
