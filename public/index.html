@@ -47,14 +47,38 @@
       }
 
       #close_pump {
-          font-size: 36px;
-          display: block;
-          margin: 24px auto;
-          border-radius: 39px;
-          border: 1px solid #ccc;
-          background-color: blue;
-          color: white;
-          padding: 12px;
+        font-size: 36px;
+        display: block;
+        margin: 24px auto;
+        border-radius: 39px;
+        border: 1px solid #ccc;
+        background-color: blue;
+        color: white;
+        padding: 12px;
+      }
+      h5 {
+        font-size: 12px;
+        margin: 12px 12px 0 12px;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 6px;
+      }
+      #pin_panel {
+        display: flex;
+      }
+      #pin_txt {
+        flex: 1;
+        font-size: 36px;
+        padding: 12px;
+        margin: 12px auto;
+        letter-spacing: 26px;
+        display: block;
+        font-family: fantasy;
+        text-align: center;
+        border: none;
+        box-shadow: inset 0px 0px 8px 1px #a5b477;
+      }
+      button:disabled {
+        opacity: 0.5;
       }
     </style>
     <script src="javascripts/jquery-3.4.1.min.js"></script>
@@ -63,9 +87,13 @@
         $("#open_pump").click(function() {
           $.post(
             "api/open_pump",
-            {},
+            { pin: $("#pin_txt").val() },
             function(data) {
-              alert("已启动");
+              if (data.code === 1001) {
+                alert("操作失败，安全码不正确");
+              } else if (data.code === 1000) {
+                alert("水泵被启动，请注意别忘记关闭！");
+              }
             },
             "json"
           );
@@ -73,18 +101,38 @@
         $("#close_pump").click(function() {
           $.post(
             "api/close_pump",
-            {},
+            { pin: $("#pin_txt").val() },
             function(data) {
-              alert("已关闭");
+              if (data.code === 1001) {
+                alert("操作失败，安全码不正确");
+              } else if (data.code === 1000) {
+                alert("已关闭水泵！");
+              }
             },
             "json"
           );
+        });
+
+        $("#pin_txt").keyup(function(ev) {
+          var v = $(ev.currentTarget).val();
+          //console.log(v);
+          if (v.length === 4) {
+            $("#content_panel button").prop("disabled", false);
+          } else {
+            $("#content_panel button").prop("disabled", true);
+          }
         });
       });
     </script>
   </head>
   <body>
-    <button id="open_pump">启动水泵</button
-    ><button id="close_pump">关闭水泵</button>
+    <h5>请输入4位安全码</h5>
+    <div id="pin_panel">
+      <input id="pin_txt" type="password" maxlength="4" placeholder="" />
+    </div>
+    <div id="content_panel">
+      <button disabled id="open_pump">启动水泵</button
+      ><button disabled id="close_pump">关闭水泵</button>
+    </div>
   </body>
 </html>
