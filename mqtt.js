@@ -1,7 +1,10 @@
 
 var mqtt = require('mqtt'),
   util = require('./utils/index'),
+  EventEmitter = require('events').EventEmitter,
+  __ev = new EventEmitter(),
   client = undefined;
+
 //配置
 const CONFIG = require('./config/index').mqtt,
   //客户端发送消息主题
@@ -11,7 +14,11 @@ const CONFIG = require('./config/index').mqtt,
   //在线
   MESSAGE_TYPE_ONLINE = 1001,
   //离线
-  MESSAGE_TYPE_OFFLINE = 1002;
+  MESSAGE_TYPE_OFFLINE = 1002,
+  //设备状态反馈
+  MESSAGE_TYPE_STATUS = 3003,
+  //命令行输出结果
+  MESSAGE_TYPE_EXEC_RESULT = 3004;
 
 /**
 * 运行
@@ -48,19 +55,22 @@ var stop = function () {
 var messageHandler = function (topic, message) {
   try {
     console.log(topic, message.toString('utf8'));
-    // let topicObj = util.parseTopic(topic),
-    //   body = JSON.parse(message.toString('utf8'));
-    // switch (body.type) {
-    //   case MESSAGE_TYPE_ONLINE:
-    //     serviceDevice.online(topicObj.clientId);
-    //     break;
-    //   case MESSAGE_TYPE_OFFLINE:
-    //     serviceDevice.offline(topicObj.clientId);
-    //     break;
-    //   default:
-    //     console.warn('未找到要处理的类型');
-    //     break;
-    // }
+    let topicObj = util.parseTopic(topic),
+      body = JSON.parse(message.toString('utf8'));
+    switch (body.type) {
+      case MESSAGE_TYPE_ONLINE:
+        __ev.emit('online', topicObj, body);
+        break;
+      case MESSAGE_TYPE_OFFLINE:
+        __ev.emit('offline', topicObj, body);
+        break;
+      case MESSAGE_TYPE_STATUS:
+        __ev.emit('status', topicObj, body);
+        break;
+      default:
+        console.warn('未找到要处理的类型');
+        break;
+    }
   } catch (ex) {
     console.error(ex);
   }
@@ -78,5 +88,5 @@ var sendWithClient = function (clientId, body) {
   }
 };
 
-module.exports = { run, stop, sendWithClient };
+module.exports = Object.assign(__ev, { run, stop, sendWithClient });
 

@@ -83,10 +83,65 @@
       button:disabled {
         opacity: 0.5;
       }
+      .bottom {
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        height: 36px;
+        display: flex;
+      }
+
+      #online_div {
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
+        margin: 6px;
+        background: -webkit-radial-gradient(#ffffff, #c1c1c1, #a0a0a0);
+        box-shadow: 0px 0px 1px 3px #cacaca;
+      }
+
+      #online_div.online {
+        background: -webkit-radial-gradient(#d7ffc3, #81d068, #3b9e5f);
+      }
+      #message {
+        flex: 1;
+        font-size: 24px;
+        margin: 6px;
+        text-align: right;
+      }
     </style>
     <script src="javascripts/jquery-3.4.1.min.js"></script>
     <script>
       $(function() {
+        var $message = $("#message");
+        var $onlinediv = $("#online_div");
+        var getDeviceInfo = function() {
+          $.post(
+            "api/device_info",
+            {},
+            function(data) {
+              if (data.data) {
+                if (data.data.online) {
+                  $onlinediv.addClass("online");
+                } else {
+                  $onlinediv.removeClass("online");
+                }
+                if (data.data.status.pump) {
+                  $message.text("正在抽水中");
+                } else {
+                  $message.text("");
+                }
+              } else {
+                $onlinediv.removeClass("online");
+                $message.text("");
+              }
+            },
+            "json"
+          );
+        };
+        getDeviceInfo();
+
         $("#open_pump").click(function() {
           $.post(
             "api/open_pump",
@@ -96,10 +151,17 @@
                 alert("操作失败，安全码不正确");
               } else if (data.code === 1000) {
                 alert("水泵被启动，请注意别忘记关闭！");
+              } else if (data.code === 1002) {
+                alert("设备不在线！");
+              } else if (data.code === 1003) {
+                alert("请勿重复操作！");
               }
             },
             "json"
           );
+          setTimeout(function() {
+            getDeviceInfo();
+          }, 500);
         });
         $("#close_pump").click(function() {
           $.post(
@@ -110,10 +172,17 @@
                 alert("操作失败，安全码不正确");
               } else if (data.code === 1000) {
                 alert("已关闭水泵！");
+              } else if (data.code === 1002) {
+                alert("设备不在线！");
+              } else if (data.code === 1003) {
+                alert("请勿重复操作！");
               }
             },
             "json"
           );
+          setTimeout(function() {
+            getDeviceInfo();
+          }, 500);
         });
 
         $("#pin_txt").keyup(function(ev) {
@@ -136,6 +205,10 @@
     <div id="content_panel">
       <button disabled id="open_pump">启动水泵</button
       ><button disabled id="close_pump">关闭水泵</button>
+    </div>
+    <div class="bottom">
+      <div id="online_div"></div>
+      <span id="message"></span>
     </div>
   </body>
 </html>
