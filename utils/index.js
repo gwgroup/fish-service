@@ -13,7 +13,20 @@ class BusinessError extends Error {
     this.code = code;
   }
 }
+/**
+ * 获取客户端IP
+ * @param {Object} req 
+ */
+var getClientIp = function (req) {
+  var ip = req.headers['x-real-ip'] ||
+    req.headers['x-forwarded-for'] ||
+    req.socket.remoteAddress || '';
+  if (ip.split(',').length > 0) {
+    ip = ip.split(',')[0];
+  }
+  return ip;
+};
 
 module.exports = {
-  parseTopic, BusinessError
+  parseTopic, BusinessError, getClientIp
 };

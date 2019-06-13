@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
+var util = require('../../utils/index');
 
 router.post('/get_ip', function (req, res, next) {
-  let ip = req.socket.remoteAddress;
-  res.send(JSON.stringify({ code: 1000, data: ip }));
+  res.send(JSON.stringify({ code: 1000, data: util.getClientIp(req) }));
 });
 
 module.exports = router;
