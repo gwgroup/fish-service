@@ -35,7 +35,11 @@
         overflow: hidden;
       }
 
-      #open_pump {
+      #open_pump,
+      #open_aerator1,
+      #open_aerator2,
+      #open_lamp1,
+      #open_lamp2 {
         font-size: 36px;
         display: block;
         margin: 24px auto;
@@ -46,7 +50,11 @@
         padding: 12px;
       }
 
-      #close_pump {
+      #close_pump,
+      #close_aerator1,
+      #close_aerator2,
+      #close_lamp1,
+      #close_lamp2 {
         font-size: 36px;
         display: block;
         margin: 24px auto;
@@ -114,6 +122,50 @@
     <script src="javascripts/jquery-3.4.1.min.js"></script>
     <script>
       $(function() {
+        var doAction = function(url) {
+          $.post(
+            url,
+            { pin: $("#pin_txt").val() },
+            function(data) {
+              if (data.code === 1001) {
+                alert("操作失败，安全码不正确");
+              } else if (data.code === 1000) {
+                alert("已启动，请注意别忘记关闭！");
+              } else if (data.code === 1002) {
+                alert("设备不在线！");
+              } else if (data.code === 1003) {
+                alert("请勿重复操作！");
+              }
+            },
+            "json"
+          );
+          setTimeout(function() {
+            getDeviceInfo();
+          }, 500);
+        };
+
+        var unAction = function(url) {
+          $.post(
+            url,
+            { pin: $("#pin_txt").val() },
+            function(data) {
+              if (data.code === 1001) {
+                alert("操作失败，安全码不正确");
+              } else if (data.code === 1000) {
+                alert("已关闭！");
+              } else if (data.code === 1002) {
+                alert("设备不在线！");
+              } else if (data.code === 1003) {
+                alert("请勿重复操作！");
+              }
+            },
+            "json"
+          );
+          setTimeout(function() {
+            getDeviceInfo();
+          }, 500);
+        };
+
         var $message = $("#message");
         var $onlinediv = $("#online_div");
         var getDeviceInfo = function() {
@@ -143,46 +195,36 @@
         getDeviceInfo();
 
         $("#open_pump").click(function() {
-          $.post(
-            "api/open_pump",
-            { pin: $("#pin_txt").val() },
-            function(data) {
-              if (data.code === 1001) {
-                alert("操作失败，安全码不正确");
-              } else if (data.code === 1000) {
-                alert("水泵被启动，请注意别忘记关闭！");
-              } else if (data.code === 1002) {
-                alert("设备不在线！");
-              } else if (data.code === 1003) {
-                alert("请勿重复操作！");
-              }
-            },
-            "json"
-          );
-          setTimeout(function() {
-            getDeviceInfo();
-          }, 500);
+          doAction("api/open_pump");
         });
         $("#close_pump").click(function() {
-          $.post(
-            "api/close_pump",
-            { pin: $("#pin_txt").val() },
-            function(data) {
-              if (data.code === 1001) {
-                alert("操作失败，安全码不正确");
-              } else if (data.code === 1000) {
-                alert("已关闭水泵！");
-              } else if (data.code === 1002) {
-                alert("设备不在线！");
-              } else if (data.code === 1003) {
-                alert("请勿重复操作！");
-              }
-            },
-            "json"
-          );
-          setTimeout(function() {
-            getDeviceInfo();
-          }, 500);
+          unAction("api/close_pump");
+        });
+        $("#open_aerator1").click(function() {
+          doAction("api/open_aerator1");
+        });
+
+        $("#open_aerator2").click(function() {
+          doAction("api/open_aerator2");
+        });
+        $("#open_lamp1").click(function() {
+          doAction("api/open_lamp1");
+        });
+        $("#open_lamp2").click(function() {
+          doAction("api/open_lamp2");
+        });
+
+        $("#close_aerator1").click(function() {
+          unAction("api/close_aerator1");
+        });
+        $("#close_aerator2").click(function() {
+          unAction("api/close_aerator2");
+        });
+        $("#close_lamp1").click(function() {
+          unAction("api/close_lamp1");
+        });
+        $("#close_lamp2").click(function() {
+          unAction("api/close_lamp2");
         });
 
         $("#pin_txt").keyup(function(ev) {
@@ -205,6 +247,16 @@
     <div id="content_panel">
       <button disabled id="open_pump">启动水泵</button
       ><button disabled id="close_pump">关闭水泵</button>
+
+      <button disabled id="open_aerator1">开增氧机1</button
+      ><button disabled id="close_aerator1">关增氧机1</button>
+      <button disabled id="open_aerator2">开增氧机2</button
+      ><button disabled id="close_aerator2">关增氧机2</button>
+
+      <button disabled id="open_lamp1">开LED1</button
+      ><button disabled id="close_lamp1">关LED1</button>
+      <button disabled id="open_lamp2">开LED2</button
+      ><button disabled id="close_lamp2">关LED2</button>
     </div>
     <div class="bottom">
       <div id="online_div"></div>
