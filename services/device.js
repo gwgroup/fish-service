@@ -125,4 +125,4 @@ function deviceInfo(clientId) {
   return deviceStatus[clientId];
 }
 
-module.exports = { openPump, closePump, deviceInfo };
+module.exports = { openPump, closePump, openAerator1, openAerator2, openLamp1, openLamp2, closeAerator1, closeAerator2, closeLamp1, closeLamp1, closeLamp2, deviceInfo };
