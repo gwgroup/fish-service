@@ -15,14 +15,13 @@ mqtt.on('offline', function (topic, body) {
 });
 mqtt.on('status', function (topic, body) {
   __filterInsertStatus(topic.clientId);
-
-  deviceStatus[topic.clientId].status = body.status;
+  Object.assign(deviceStatus[topic.clientId].status, body.status);
   console.log('3', topic.clientId, body);
 });
 
 function __filterInsertStatus(clientId) {
   if (!deviceStatus[clientId]) {
-    deviceStatus[clientId] = { online: 1, status: { pump: 0 } };
+    deviceStatus[clientId] = { online: 1, status: {} };
   }
 }
 
