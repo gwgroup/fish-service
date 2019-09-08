@@ -17,8 +17,8 @@ const CONFIG = require('./config/index').mqtt,
   MESSAGE_TYPE_OFFLINE = 1002,
   //设备状态反馈
   MESSAGE_TYPE_STATUS = 3003,
-  //命令行输出结果
-  MESSAGE_TYPE_EXEC_RESULT = 3004;
+  //RPC 结果
+  MESSAGE_TYPE_RPC = 5001;
 
 /**
 * 运行
@@ -58,6 +58,10 @@ var messageHandler = function (topic, message) {
     let topicObj = util.parseTopic(topic),
       body = JSON.parse(message.toString('utf8'));
     switch (body.type) {
+      case MESSAGE_TYPE_RPC:
+        let id = body.id;
+        __ev.emit(`rpc_${id}`, body, topicObj);
+        break;
       case MESSAGE_TYPE_ONLINE:
         __ev.emit('online', topicObj, body);
         break;
@@ -82,11 +86,36 @@ var messageHandler = function (topic, message) {
 * @param {Object} body 
 */
 var sendWithClient = function (clientId, body) {
-  if (client) {
+  if (client && client.connected) {
     let topic = `device/get/fish/${clientId}`;
     client.publish(topic, JSON.stringify(body));
   }
 };
 
-module.exports = Object.assign(__ev, { run, stop, sendWithClient });
+/**
+ * 远程调用
+ * @param {*} clientId 
+ * @param {*} body 
+ * @param {*} cb 
+ */
+var rpc = function (clientId, body, cb) {
+  if (client && client.connected) {
+    let id = util.generateID(),
+      evName = `rpc_${id}`,
+      topic = `device/get/fish/${clientId}`;
+    client.publish(topic, JSON.stringify(Object.assign({ id, type: MESSAGE_TYPE_RPC }, body)));
+    let qTimeout = setTimeout(() => {
+      __ev.removeListener(evName);
+      return cb(new Error('通讯超时!'));
+    }, 5000);
+    __ev.once(evName, function (result) {
+      clearTimeout(qTimeout);
+      return cb(undefined, result);
+    });
+  } else {
+    return cb(new Error('服务器异常!'));
+  }
+}
+
+module.exports = Object.assign(__ev, { run, stop, sendWithClient, rpc });
 

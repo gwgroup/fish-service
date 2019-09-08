@@ -1,9 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var util = require('../../utils/index');
-
+var deviceService = require('../../services/device');
 router.get('/get_info', function (req, res, next) {
-  res.send(JSON.stringify({ code: 1000, data: { local_ip: util.getClientIp(req), server_timestamp: Date.now() } }));
+  let client_id = req.param("client_id");
+  let ip = util.getClientIp(req);
+  deviceService.deviceInfo(client_id).ip = ip;
+  res.send(JSON.stringify({ code: 1000, data: { local_ip: ip, server_timestamp: Date.now() } }));
 });
 
 module.exports = router;
