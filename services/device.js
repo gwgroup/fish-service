@@ -35,7 +35,7 @@ function updateReset(clientId) {
     if (err) {
       return console.error(err);
     }
-    console.log( result);
+    console.log(result);
   });
 }
 
@@ -53,7 +53,11 @@ function deviceInfo(clientId) {
  * @param {Number} duration 持续时间
  * @param {Function} cb 回调
  */
-function open(clientId,ioCode, duration, cb) {
+function open(clientId, ioCode, duration, cb) {
+  let cdi = deviceInfo(clientId);
+  if (cdi[ioCode] && cdi[ioCode].opened) {
+    return cb(new Error("设备已经启动，不需要重复操作"));
+  }
   mqtt.rpc(clientId, { io_code: ioCode, duration, sub_type: ACTION_CODES.OPEN }, cb);
 }
 
@@ -62,7 +66,11 @@ function open(clientId,ioCode, duration, cb) {
  * @param {String} ioCode 
  * @param {Function} cb 
  */
-function close(clientId,ioCode, cb) {
+function close(clientId, ioCode, cb) {
+  let cdi = deviceInfo(clientId);
+  if (cdi[ioCode] && !cdi[ioCode].opened) {
+    return cb(new Error("设备已经关闭，不需要重复操作"));
+  }
   mqtt.rpc(clientId, { io_code: ioCode, sub_type: ACTION_CODES.CLOSE }, cb);
 }
 

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no, viewport-fit=cover"
+    />
+    <title>设备控制中心</title>
+    <style>
+      html {
+        font-size: 20px;
+        font-size: 5.33333vw;
+      }
+
+      @media screen and (min-width: 540px) {
+        html {
+          font-size: 28.8px;
+        }
+      }
+
+      * {
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+        outline: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-size: 12px;
+        margin: 0px 0px 48px 0px;
+        background-color: #e8e8eb;
+        overflow-x: hidden;
+      }
+
+      #open_pump,
+      #open_aerator1,
+      #open_aerator2,
+      #open_lamp1,
+      #open_lamp2 {
+        font-size: 26px;
+        margin: 12px 8px;
+        border-radius: 39px;
+        border: 1px solid #ccc;
+        background-color: green;
+        color: white;
+        padding: 12px;
+        width: 40%;
+      }
+
+      #close_pump,
+      #close_aerator1,
+      #close_aerator2,
+      #close_lamp1,
+      #close_lamp2 {
+        font-size: 26px;
+        margin: 12px 8px;
+        border-radius: 39px;
+        border: 1px solid #ccc;
+        background-color: blue;
+        color: white;
+        padding: 12px;
+        width: 40%;
+      }
+      h5 {
+        font-size: 12px;
+        margin: 12px 12px 0 12px;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 6px;
+      }
+      #pin_panel {
+        margin: 12px 0;
+        padding: 6px;
+        border: none;
+        box-shadow: inset 0px 0px 8px 1px #a5b477;
+        background-color: white;
+      }
+      #pin_txt {
+        font-size: 36px;
+        letter-spacing: 26px;
+        font-family: fantasy;
+        text-align: center;
+        width: 248px;
+        display: block;
+        margin: 0px auto;
+        background-color: transparent;
+        border: none;
+      }
+      button:disabled {
+        opacity: 0.5;
+      }
+      .bottom {
+        position: fixed;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        display: flex;
+        background-color: white;
+        border-top: 1px solid #ccc;
+      }
+
+      #online_div {
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
+        margin: 12px;
+        background: -webkit-radial-gradient(#ffffff, #c1c1c1, #a0a0a0);
+        box-shadow: 0px 0px 1px 3px #cacaca;
+      }
+
+      #online_div.online {
+        background: -webkit-radial-gradient(#d7ffc3, #81d068, #3b9e5f);
+      }
+      #message {
+        flex: 1;
+        font-size: 24px;
+        margin: 6px;
+        text-align: right;
+      }
+      #content_panel {
+        text-align: center;
+      }
+    </style>
+    <script src="javascripts/jquery-3.4.1.min.js"></script>
+    <script>
+      $(function() {
+        var doAction = function(url) {
+          $.post(
+            url,
+            { pin: $("#pin_txt").val() },
+            function(data) {
+              if (data.code === 1001) {
+                alert("操作失败，安全码不正确");
+              } else if (data.code === 1000) {
+                alert("已启动，请注意别忘记关闭！");
+              } else if (data.code === 1002) {
+                alert("设备不在线！");
+              } else if (data.code === 1003) {
+                alert("请勿重复操作！");
+              }
+            },
+            "json"
+          );
+          setTimeout(function() {
+            getDeviceInfo();
+          }, 500);
+        };
+
+        var unAction = function(url) {
+          $.post(
+            url,
+            { pin: $("#pin_txt").val() },
+            function(data) {
+              if (data.code === 1001) {
+                alert("操作失败，安全码不正确");
+              } else if (data.code === 1000) {
+                alert("已关闭！");
+              } else if (data.code === 1002) {
+                alert("设备不在线！");
+              } else if (data.code === 1003) {
+                alert("请勿重复操作！");
+              }
+            },
+            "json"
+          );
+          setTimeout(function() {
+            getDeviceInfo();
+          }, 500);
+        };
+
+        var $message = $("#message");
+        var $onlinediv = $("#online_div");
+        var getDeviceInfo = function() {
+          $.post(
+            "api/device_info",
+            {},
+            function(data) {
+              if (data.data) {
+                if (data.data.online) {
+                  $onlinediv.addClass("online");
+                } else {
+                  $onlinediv.removeClass("online");
+                }
+                if (data.data.status.pump) {
+                  $message.text("正在抽水中");
+                } else {
+                  $message.text("");
+                }
+              } else {
+                $onlinediv.removeClass("online");
+                $message.text("");
+              }
+            },
+            "json"
+          );
+        };
+        getDeviceInfo();
+
+        $("#open_pump").click(function() {
+          doAction("api/open_pump");
+        });
+        $("#close_pump").click(function() {
+          unAction("api/close_pump");
+        });
+        $("#open_aerator1").click(function() {
+          doAction("api/open_aerator1");
+        });
+
+        $("#open_aerator2").click(function() {
+          doAction("api/open_aerator2");
+        });
+        $("#open_lamp1").click(function() {
+          doAction("api/open_lamp1");
+        });
+        $("#open_lamp2").click(function() {
+          doAction("api/open_lamp2");
+        });
+
+        $("#close_aerator1").click(function() {
+          unAction("api/close_aerator1");
+        });
+        $("#close_aerator2").click(function() {
+          unAction("api/close_aerator2");
+        });
+        $("#close_lamp1").click(function() {
+          unAction("api/close_lamp1");
+        });
+        $("#close_lamp2").click(function() {
+          unAction("api/close_lamp2");
+        });
+
+        $("#pin_txt").keyup(function(ev) {
+          var v = $(ev.currentTarget).val();
+          //console.log(v);
+          if (v.length === 4) {
+            $("#content_panel button").prop("disabled", false);
+          } else {
+            $("#content_panel button").prop("disabled", true);
+          }
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <h5>请输入4位安全码</h5>
+    <div id="pin_panel">
+      <input id="pin_txt" type="password" maxlength="4" placeholder="" />
+    </div>
+    <div id="content_panel">
+      <button disabled id="open_pump">启动水泵</button
+      ><button disabled id="close_pump">关闭水泵</button>
+
+      <button disabled id="open_aerator1">开增氧机<hr>1</button
+      ><button disabled id="close_aerator1">关增氧机<hr>1</button>
+      <button disabled id="open_aerator2">开增氧机<hr>2</button
+      ><button disabled id="close_aerator2">关增氧机<hr>2</button>
+
+      <button disabled id="open_lamp1">开LED<hr>1</button
+      ><button disabled id="close_lamp1">关LED<hr>1</button>
+      <button disabled id="open_lamp2">开LED<hr>2</button
+      ><button disabled id="close_lamp2">关LED<hr>2</button>
+    </div>
+    <div class="bottom">
+      <div id="online_div"></div>
+      <span id="message"></span>
+    </div>
+  </body>
+</html>
