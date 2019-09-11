@@ -13,31 +13,45 @@
     <script>
       $(function() {
         $("#open_btn").click(function() {
-          $.post(
-            "api/open",
-            {
+          $.ajax({
+            type: "POST",
+            url: "api/open",
+            cache: false,
+            dataType: "json",
+            data: {
               client_id: $("#client").val(),
               io_code: $("#io_code").val(),
               duration: parseInt($("#duration").val())
             },
-            function(data) {
-              alert(data.message);
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              authorization: "b5fff1337ab14429b7880d5678c94651",
+              "Content-Type": "application/json"
             },
-            "json"
-          );
+            success: function(data) {
+              alert(data.message);
+            }
+          });
         });
         $("#close_btn").click(function() {
-          $.post(
-            "api/close",
-            {
+          $.ajax({
+            type: "POST",
+            url: "api/close",
+            cache: false,
+            dataType: "json",
+            data: {
               client_id: $("#client").val(),
               io_code: $("#io_code").val()
             },
-            function(data) {
-              alert(data.message);
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              authorization: "b5fff1337ab14429b7880d5678c94651",
+              "Content-Type": "application/json"
             },
-            "json"
-          );
+            success: function(data) {
+              alert(data.message);
+            }
+          });
         });
       });
     </script>
