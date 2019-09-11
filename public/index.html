@@ -16,7 +16,7 @@
           $.post(
             "api/open",
             {
-              client_id:$("#client").val(),
+              client_id: $("#client").val(),
               io_code: $("#io_code").val(),
               duration: parseInt($("#duration").val())
             },
@@ -30,7 +30,7 @@
           $.post(
             "api/close",
             {
-              client_id:$("#client").val(),
+              client_id: $("#client").val(),
               io_code: $("#io_code").val()
             },
             function(data) {
@@ -43,7 +43,7 @@
     </script>
   </head>
   <body>
-    <input id="client" value="b827eb170977" />
+    <input id="client" value="" />
     <input id="duration" value="60" />
     <select id="io_code">
       <option value="lamp1" selected>灯1</option>
