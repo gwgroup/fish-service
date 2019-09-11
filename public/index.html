@@ -18,11 +18,11 @@
             url: "api/device/open",
             cache: false,
             dataType: "json",
-            data: {
+            data: JSON.stringify({
               client_id: $("#client").val(),
               io_code: $("#io_code").val(),
               duration: parseInt($("#duration").val())
-            },
+            }),
             headers: {
               "Access-Control-Allow-Origin": "*",
               authorization: "b5fff1337ab14429b7880d5678c94651",
@@ -39,10 +39,10 @@
             url: "api/device/close",
             cache: false,
             dataType: "json",
-            data: {
+            data: JSON.stringify({
               client_id: $("#client").val(),
               io_code: $("#io_code").val()
-            },
+            }),
             headers: {
               "Access-Control-Allow-Origin": "*",
               authorization: "b5fff1337ab14429b7880d5678c94651",
