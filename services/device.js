@@ -1,29 +1,36 @@
 var mqtt = require('../mqtt');
+var serviceReport = require('./report');
 let ACTION_CODES = Object.freeze({ EXEC: 3004, OPEN: 4001, CLOSE: 4002, GET_IO_SETTING: 4011, GET_PLAN_SETTING: 4012, GET_TRIGGER_SETTING: 4013 });
-var deviceStatus = {};
-mqtt.run();
-mqtt.on('online', function (topic, body) {
+var deviceStatus = new Map();
+mqtt.on('online', function (topic) {
   __filterInsertStatus(topic.clientId);
   deviceStatus[topic.clientId].online = 1;
-  console.log('1', topic.clientId, body);
 });
-mqtt.on('offline', function (topic, body) {
-  __filterInsertStatus(topic.clientId);
+mqtt.on('offline', function (topic) {
+  __filterInsertStatus(topic.clientId, true);
   if (deviceStatus[topic.clientId]) {
     deviceStatus[topic.clientId].online = 0;
   }
-  console.log('2', topic.clientId, body);
 });
-mqtt.on('status', function (topic, body) {
+mqtt.on('status', function (topic, status) {
   __filterInsertStatus(topic.clientId);
-  Object.assign(deviceStatus[topic.clientId].status, body.status);
-  console.log('3', topic.clientId, body);
+  Object.assign(deviceStatus[topic.clientId].status, status);
+});
+mqtt.on('report', function (topic, report) {
+  __filterInsertStatus(topic.clientId);
+  serviceReport.fill(topic.clientId, report);
 });
 
-function __filterInsertStatus(clientId) {
+/**
+ * 
+ * @param {String} clientId 
+ * @param {Boolean} offline 是否下线
+ */
+function __filterInsertStatus(clientId, offline) {
   if (!deviceStatus[clientId]) {
-    deviceStatus[clientId] = { online: 1, status: {} };
+    deviceStatus[clientId] = { online: offline ? 0 : 1, status: {} };
   }
+
 }
 
 /**
@@ -31,7 +38,7 @@ function __filterInsertStatus(clientId) {
  * @param {*} clientId 
  */
 function updateReset(clientId) {
-  mqtt.rpc(clientId, { "sub_type": ACTION_CODES.EXEC, "cmd": "/home/work/script/fish-client.auto.update.sh" }, (err, result) => {
+  mqtt.rpc(clientId, { sub_type: ACTION_CODES.EXEC, "cmd": "/home/work/script/fish-client.autofast.update.sh" }, (err, result) => {
     if (err) {
       return console.error(err);
     }
@@ -43,7 +50,7 @@ function updateReset(clientId) {
  * 获取设备信息
  * @param {String} clientId 
  */
-function deviceInfo(clientId) {
+function getDeviceStatus(clientId) {
   return deviceStatus[clientId];
 }
 
@@ -54,7 +61,7 @@ function deviceInfo(clientId) {
  * @param {Function} cb 回调
  */
 function open(clientId, ioCode, duration, cb) {
-  let cdi = deviceInfo(clientId);
+  let cdi = getDeviceStatus(clientId);
   if (cdi[ioCode] && cdi[ioCode].opened) {
     return cb(new Error("设备已经启动，不需要重复操作"));
   }
@@ -67,11 +74,13 @@ function open(clientId, ioCode, duration, cb) {
  * @param {Function} cb 
  */
 function close(clientId, ioCode, cb) {
-  let cdi = deviceInfo(clientId);
+  let cdi = getDeviceStatus(clientId);
   if (cdi[ioCode] && !cdi[ioCode].opened) {
     return cb(new Error("设备已经关闭，不需要重复操作"));
   }
   mqtt.rpc(clientId, { io_code: ioCode, sub_type: ACTION_CODES.CLOSE }, cb);
 }
 
-module.exports = { open, close, deviceInfo, updateReset };
+
+
+module.exports = { open, close, getDeviceStatus, updateReset };

@@ -1,12 +1,14 @@
 
 var mqtt = require('mqtt'),
   util = require('./utils/index'),
+  config = require('./config/index'),
+  CODES = config.codes,
   EventEmitter = require('events').EventEmitter,
   __ev = new EventEmitter(),
   client = undefined;
 
 //配置
-const CONFIG = require('./config/index').mqtt,
+const CONFIG = config.mqtt,
   //客户端发送消息主题
   SUB_TOPIC = 'device/set/fish/#',
   //遗嘱主题
@@ -18,7 +20,9 @@ const CONFIG = require('./config/index').mqtt,
   //设备状态反馈
   MESSAGE_TYPE_STATUS = 3003,
   //RPC 结果
-  MESSAGE_TYPE_RPC = 5001;
+  MESSAGE_TYPE_RPC = 5001,
+  //报告收集
+  MESSAGE_TYPE_REPORT = 3005;
 
 /**
 * 运行
@@ -36,16 +40,16 @@ var run = function () {
   client.on("message", messageHandler);
 };
 
-/**
-* 停止
-*/
-var stop = function () {
-  console.log("断开MQTT连接");
-  if (client) {
-    client.end();
-    client = undefined;
-  }
-};
+// /**
+// * 停止
+// */
+// var stop = function () {
+//   console.log("断开MQTT连接");
+//   if (client) {
+//     client.end();
+//     client = undefined;
+//   }
+// };
 
 /**
 * 消息处理
@@ -63,13 +67,16 @@ var messageHandler = function (topic, message) {
         __ev.emit(`rpc_${id}`, body, topicObj);
         break;
       case MESSAGE_TYPE_ONLINE:
-        __ev.emit('online', topicObj, body);
+        __ev.emit('online', topicObj);
         break;
       case MESSAGE_TYPE_OFFLINE:
-        __ev.emit('offline', topicObj, body);
+        __ev.emit('offline', topicObj);
         break;
       case MESSAGE_TYPE_STATUS:
-        __ev.emit('status', topicObj, body);
+        __ev.emit('status', topicObj, body.status);
+        break;
+      case MESSAGE_TYPE_REPORT:
+        __ev.emit('report', topicObj, body.report);
         break;
       default:
         console.warn('未找到要处理的类型');
@@ -94,9 +101,9 @@ var sendWithClient = function (clientId, body) {
 
 /**
  * 远程调用
- * @param {*} clientId 
- * @param {*} body 
- * @param {*} cb 
+ * @param {String} clientId 
+ * @param {Object} body 
+ * @param {Function} cb 
  */
 var rpc = function (clientId, body, cb) {
   if (client && client.connected) {
@@ -104,18 +111,21 @@ var rpc = function (clientId, body, cb) {
       evName = `rpc_${id}`,
       topic = `device/get/fish/${clientId}`;
     client.publish(topic, JSON.stringify(Object.assign({ id, type: MESSAGE_TYPE_RPC }, body)));
-    let qTimeout = setTimeout(() => {
-      __ev.removeListener(evName);
-      return cb(new Error('通讯超时!'));
+    let qTimeout = null,
+      tHandler = function (result) {
+        clearTimeout(qTimeout);
+        return cb(undefined, result);
+      };
+    __ev.once(evName, tHandler);
+    qTimeout = setTimeout(() => {
+      __ev.removeListener(evName, tHandler);
+      return cb(util.BusinessError.create(CODES.rpcTimeout));
     }, 5000);
-    __ev.once(evName, function (result) {
-      clearTimeout(qTimeout);
-      return cb(undefined, result);
-    });
   } else {
-    return cb(new Error('服务器异常!'));
+    return cb(util.BusinessError.create(CODES.serverError));
   }
 }
 
-module.exports = Object.assign(__ev, { run, stop, sendWithClient, rpc });
+run();
+module.exports = Object.assign(__ev, { sendWithClient, rpc });
 

@@ -6,12 +6,18 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "@alicloud/sms-sdk": "^1.1.6",
+    "async": "^3.1.0",
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
     "ejs": "~2.6.1",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
-    "mqtt": "^3.0.0"
+    "mqtt": "^3.0.0",
+    "mysql": "^2.17.1",
+    "redis": "^2.8.0",
+    "request": "^2.88.0",
+    "stream": "0.0.2"
   }
 }
