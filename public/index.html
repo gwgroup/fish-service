@@ -14,7 +14,7 @@
       $(function() {
         $("#open_btn").click(function() {
           $.ajax({
-            type: "POST",
+            method: "POST",
             url: "api/device/open",
             cache: false,
             dataType: "json",
@@ -35,7 +35,7 @@
         });
         $("#close_btn").click(function() {
           $.ajax({
-            type: "POST",
+            method: "POST",
             url: "api/device/close",
             cache: false,
             dataType: "json",
