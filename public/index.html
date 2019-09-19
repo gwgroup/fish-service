@@ -53,6 +53,22 @@
             }
           });
         });
+
+        var ws = new WebSocket(
+          "ws://localhost:82?token=b5fff1337ab14429b7880d5678c94651"
+        );
+        ws.onopen = function() {
+          console.log("ws", "OPENED");
+        };
+        ws.onmessage = function(ev) {
+          console.log(ev.data);
+        };
+        ws.onerror = function(err) {
+          console.error(err);
+        };
+        ws.onclose = function() {
+          console.log("ws", "closed");
+        };
       });
     </script>
   </head>

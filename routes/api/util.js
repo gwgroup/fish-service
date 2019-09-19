@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var util = require('../../utils/index');
 var deviceService = require('../../services/device');
+
 router.get('/get_info', function (req, res, next) {
   let client_id = req.param("client_id");
   let ip = util.getClientIp(req);

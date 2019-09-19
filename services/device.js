@@ -1,23 +1,26 @@
 var mqtt = require('../mqtt');
 var serviceReport = require('./report');
+var serviceUserDevice = require('./scene');
+var ws = require('../ws');
 let ACTION_CODES = Object.freeze({ EXEC: 3004, OPEN: 4001, CLOSE: 4002, GET_IO_SETTING: 4011, GET_PLAN_SETTING: 4012, GET_TRIGGER_SETTING: 4013 });
 var deviceStatus = new Map();
 mqtt.on('online', function (topic) {
   __filterInsertStatus(topic.clientId);
-  deviceStatus[topic.clientId].online = 1;
+  deviceStatus[topic.clientId].online = true;
+  __noticeDeviceStatusToApp(topic.clientId);
 });
 mqtt.on('offline', function (topic) {
   __filterInsertStatus(topic.clientId, true);
-  if (deviceStatus[topic.clientId]) {
-    deviceStatus[topic.clientId].online = 0;
-  }
+  deviceStatus[topic.clientId].online = false;
+  __noticeDeviceStatusToApp(topic.clientId);
 });
 mqtt.on('status', function (topic, status) {
   __filterInsertStatus(topic.clientId);
   Object.assign(deviceStatus[topic.clientId].status, status);
+  __noticeDeviceStatusToApp(topic.clientId);
 });
 mqtt.on('report', function (topic, report) {
-  __filterInsertStatus(topic.clientId);
+  //__filterInsertStatus(topic.clientId);
   serviceReport.fill(topic.clientId, report);
 });
 
@@ -30,12 +33,21 @@ function __filterInsertStatus(clientId, offline) {
   if (!deviceStatus[clientId]) {
     deviceStatus[clientId] = { online: offline ? 0 : 1, status: {} };
   }
+}
 
+/**
+ * 通知设备状态到APP用户
+ * @param {String} clientId 
+ */
+function __noticeDeviceStatusToApp(clientId) {
+  let obj = deviceStatus[clientId];
+  let uids = serviceUserDevice.getUserids(clientId);
+  ws.sendDataWithUsers(uids, obj);
 }
 
 /**
  * 更新重启
- * @param {*} clientId 
+ * @param {String} clientId 
  */
 function updateReset(clientId) {
   mqtt.rpc(clientId, { sub_type: ACTION_CODES.EXEC, "cmd": "/home/work/script/fish-client.autofast.update.sh" }, (err, result) => {
