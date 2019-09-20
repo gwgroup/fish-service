@@ -24,6 +24,15 @@ mqtt.on('report', function (topic, report) {
   serviceReport.fill(topic.clientId, report);
 });
 
+ws.on('connect', (con) => {
+  let userid = con.userId;
+  let macs = serviceUserDevice.getDeviceMacs(userid);
+  macs.forEach((mac) => {
+    let data = { type: 1, device_mac: mac, data: getDeviceStatus(mac) };
+    ws.sendData(con, data);
+  });
+});
+
 /**
  * 
  * @param {String} clientId 
@@ -42,7 +51,7 @@ function __filterInsertStatus(clientId, offline) {
 function __noticeDeviceStatusToApp(clientId) {
   let obj = deviceStatus[clientId];
   let uids = serviceUserDevice.getUserids(clientId);
-  ws.sendDataWithUsers(uids, obj);
+  ws.sendDataWithUsers(uids, { type: 1, device_mac: clientId, data: obj });
 }
 
 /**
@@ -63,6 +72,7 @@ function updateReset(clientId) {
  * @param {String} clientId 
  */
 function getDeviceStatus(clientId) {
+  __filterInsertStatus(clientId);
   return deviceStatus[clientId];
 }
 

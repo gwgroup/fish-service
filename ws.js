@@ -1,6 +1,8 @@
 var async = require('async');
 var WebSocketServer = require('websocket').server;
 var tokenService = require('./services/token');
+let EventEmitter = require('events').EventEmitter;
+let __ev = new EventEmitter();
 let ws = null;
 let connections = new Set();
 
@@ -46,6 +48,7 @@ function listen(httpServer) {
         req.on("message", __handlerMessage);
         con.on('close', __handlerClose);
         connections.add(con);
+        __ev.emit('connect', con);
       }
     );
   });
@@ -79,4 +82,16 @@ function __getConnectionsWithUserids(userids) {
   return ary;
 }
 
-module.exports = { listen, sendDataWithUsers };
+/**
+ * 发送数据
+ * @param {Object} con 
+ * @param {Object} obj 
+ */
+function sendData(con, obj) {
+  let data = JSON.stringify(obj);
+  if (con.connected) {
+    con.sendUTF(data);
+  }
+}
+
+module.exports = Object.assign(__ev, { listen, sendDataWithUsers, sendData });

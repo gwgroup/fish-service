@@ -61,6 +61,9 @@
           console.log("ws", "OPENED");
         };
         ws.onmessage = function(ev) {
+          if (JSON.parse(ev.data).device_mac === "b827eb170977") {
+            $("#log").val(ev.data);
+          }
           console.log(ev.data);
         };
         ws.onerror = function(err) {
@@ -73,6 +76,9 @@
     </script>
   </head>
   <body>
+    <textarea id="log" style="width:100%; margin: 12px; height: 141px;">
+    </textarea>
+    <br />
     <input id="client" value="" />
     <input id="duration" value="1000" />
     <select id="io_code">

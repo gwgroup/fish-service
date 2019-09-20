@@ -13,6 +13,8 @@ const CONFIG = config.mqtt,
   SUB_TOPIC = 'device/set/fish/#',
   //遗嘱主题
   LWT_TOPIC = 'device/lwt/fish/#',
+  //下方公共消息
+  PUBLIC_TOPIC = "device/public/fish",
   //在线
   MESSAGE_TYPE_ONLINE = 1001,
   //离线
@@ -36,6 +38,8 @@ var run = function () {
   client.on("connect", function () {
     client.subscribe(SUB_TOPIC, { qos: 2, retain: false });
     client.subscribe(LWT_TOPIC, { qos: 2, retain: false });
+    sendAllClient({ sub_type: MESSAGE_TYPE_STATUS });
+    //通知所有客户端上报设备状态
   });
   client.on("message", messageHandler);
 };
@@ -100,6 +104,16 @@ var sendWithClient = function (clientId, body) {
 };
 
 /**
+* 发送数据到所有客户端（clientId）
+* @param {Object} body 
+*/
+var sendAllClient = function (body) {
+  if (client && client.connected) {
+    client.publish(PUBLIC_TOPIC, JSON.stringify(body));
+  }
+};
+
+/**
  * 远程调用
  * @param {String} clientId 
  * @param {Object} body 
@@ -127,5 +141,5 @@ var rpc = function (clientId, body, cb) {
 }
 
 run();
-module.exports = Object.assign(__ev, { sendWithClient, rpc });
+module.exports = Object.assign(__ev, { sendWithClient, rpc, sendAllClient });
 

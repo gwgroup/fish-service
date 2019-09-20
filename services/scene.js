@@ -72,5 +72,20 @@ function __freshUserids(device_mac, cb) {
       });
     });
 }
+
+/**
+ * 获取所有设备标识（根据用户ID）
+ * @param {String} userId 
+ */
+function getDeviceMacs(userId) {
+  let result = [];
+  maps.forEach((item, key) => {
+    if (item.indexOf(userId) != -1) {
+      result.push(key);
+    }
+  });
+  return result;
+}
+
 __init();
-module.exports = { getUserids };
+module.exports = { getUserids, getDeviceMacs };
