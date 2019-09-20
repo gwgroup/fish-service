@@ -54,11 +54,15 @@
           });
         });
 
+        var baseurl = "";
+        if (window.location.hostname === "localhost") {
+          baseurl = "ws://localhost:82";
+        } else {
+          baseurl = "wss://fish.ypcxpt.com";
+        }
+
         var ws = new WebSocket(
-          "ws://" +
-            window.location.hostname +
-            (window.location.port ? ":" + window.location.port : "") +
-            "?token=b5fff1337ab14429b7880d5678c94651"
+          baseurl + "?token=b5fff1337ab14429b7880d5678c94651"
         );
         ws.onopen = function() {
           console.log("ws", "OPENED");
