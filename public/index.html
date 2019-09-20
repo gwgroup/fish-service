@@ -55,7 +55,10 @@
         });
 
         var ws = new WebSocket(
-          "ws://localhost:82?token=b5fff1337ab14429b7880d5678c94651"
+          "ws://" +
+            window.location.hostname +
+            (window.location.port ? ":" + window.location.port : "") +
+            "?token=b5fff1337ab14429b7880d5678c94651"
         );
         ws.onopen = function() {
           console.log("ws", "OPENED");
