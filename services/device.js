@@ -6,12 +6,12 @@ let ACTION_CODES = Object.freeze({ EXEC: 3004, OPEN: 4001, CLOSE: 4002, GET_IO_S
 var deviceStatus = new Map();
 mqtt.on('online', function (topic) {
   __filterInsertStatus(topic.clientId);
-  deviceStatus[topic.clientId].online = true;
+  deviceStatus[topic.clientId].online = 1;
   __noticeDeviceStatusToApp(topic.clientId);
 });
 mqtt.on('offline', function (topic) {
   __filterInsertStatus(topic.clientId, true);
-  deviceStatus[topic.clientId].online = false;
+  deviceStatus[topic.clientId].online = 0;
   __noticeDeviceStatusToApp(topic.clientId);
 });
 mqtt.on('status', function (topic, status) {
@@ -72,7 +72,7 @@ function updateReset(clientId) {
  * @param {String} clientId 
  */
 function getDeviceStatus(clientId) {
-  __filterInsertStatus(clientId);
+  __filterInsertStatus(clientId, true);
   return deviceStatus[clientId];
 }
 
