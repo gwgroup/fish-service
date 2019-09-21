@@ -1,7 +1,7 @@
-var util = require('../utils/index'),
+var
+  async = require('async'),
+  util = require('../utils/index'),
   MysqlHelper = util.MysqlHelper,
-  BusinessError = util.BusinessError,
-  config = require('../config/index'),
   EventEmitter = require('events').EventEmitter,
   __ev = new EventEmitter();
 let maps = new Map();
