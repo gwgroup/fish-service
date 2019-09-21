@@ -1,6 +1,6 @@
 var mqtt = require('../mqtt');
 var serviceReport = require('./report');
-var serviceUserDevice = require('./scene');
+var serviceScene = require('./scene');
 var ws = require('../ws');
 let ACTION_CODES = Object.freeze({ EXEC: 3004, OPEN: 4001, CLOSE: 4002, GET_IO_SETTING: 4011, GET_PLAN_SETTING: 4012, GET_TRIGGER_SETTING: 4013 });
 var deviceStatus = new Map();
@@ -26,11 +26,17 @@ mqtt.on('report', function (topic, report) {
 
 ws.on('connect', (con) => {
   let userid = con.userId;
-  let macs = serviceUserDevice.getDeviceMacs(userid);
+  let macs = serviceScene.getDeviceMacs(userid);
   macs.forEach((mac) => {
     let data = { type: 1, device_mac: mac, data: getDeviceStatus(mac) };
     ws.sendData(con, data);
   });
+});
+
+serviceScene.on('addscene', function (userId, device_mac) {
+  //用户添加场景,触发发送设备状态到ws
+  let data = { type: 1, device_mac, data: getDeviceStatus(device_mac) };
+  ws.sendDataWithUsers(userId, data);
 });
 
 /**
@@ -50,7 +56,7 @@ function __filterInsertStatus(clientId, offline) {
  */
 function __noticeDeviceStatusToApp(clientId) {
   let obj = deviceStatus[clientId];
-  let uids = serviceUserDevice.getUserids(clientId);
+  let uids = serviceScene.getUserids(clientId);
   ws.sendDataWithUsers(uids, { type: 1, device_mac: clientId, data: obj });
 }
 

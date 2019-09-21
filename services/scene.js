@@ -1,16 +1,17 @@
 var util = require('../utils/index'),
   MysqlHelper = util.MysqlHelper,
   BusinessError = util.BusinessError,
-  config = require('../config/index');
-
+  config = require('../config/index'),
+  EventEmitter = require('events').EventEmitter,
+  __ev = new EventEmitter();
 let maps = new Map();
+
 /*
 结构如：
 {
   "a":[uid,uid,uid],
   "b":[uid,uid,uid]
 }
-
 */
 
 function __fillItem(el) {
@@ -64,12 +65,13 @@ function __freshUserids(device_mac, cb) {
     `, [device_mac],
     (err, results) => {
       if (err) {
-        throw err;
+        return cb(err);
       }
       maps.delete(device_mac);
       results.forEach(element => {
         __fillItem(element);
       });
+      cb();
     });
 }
 
@@ -87,5 +89,49 @@ function getDeviceMacs(userId) {
   return result;
 }
 
+/**
+ * 添加场景
+ * @param {String} userId 
+ * @param {String} device_mac 
+ * @param {String} scene_name
+ */
+function addScene(userId, { device_mac, scene_name }, cb) {
+  async.waterfall([
+    (cb) => {
+      MysqlHelper.query('INSERT INTO `fish`.`f_scene` (`user_id`,`device_mac`,`scene_name`) VALUES (?,?,?);', [userId, device_mac, scene_name], cb);
+    }, (result, fields, cb) => {
+      __freshUserids(device_mac, cb);
+      __ev.emit('addscene', userId, device_mac);
+    }
+  ], (err) => {
+    cb(err);
+  });
+}
+
+/**
+ * 移除场景
+ * @param {String} userId 
+ * @param {String} device_mac 
+ * @param {String} scene_name
+ */
+function removeScene(userId, device_mac, cb) {
+  async.waterfall([
+    (cb) => {
+      MysqlHelper.query('DELETE FROM `fish`.`f_scene` WHERE `user_id` = ? AND `device_mac` = ?;', [userId, device_mac], cb);
+    }, (result, fields, cb) => {
+      __freshUserids(device_mac, cb);
+    }
+  ], (err) => {
+    cb(err);
+  });
+}
+/**
+ * 获取所有场景
+ * @param {String} userId 
+ * @param {Function} cb 
+ */
+function getAllScene(userId, cb) {
+  MysqlHelper.query('SELECT `device_mac`,`scene_name` FROM `fish`.`f_scene` WHERE `user_id`=?;', [userId], cb);
+}
+module.exports = Object.assign(__ev, { getUserids, getDeviceMacs, addScene, removeScene, getAllScene });
 __init();
-module.exports = { getUserids, getDeviceMacs };
