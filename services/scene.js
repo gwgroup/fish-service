@@ -109,6 +109,16 @@ function addScene(userId, { device_mac, scene_name }, cb) {
 }
 
 /**
+ * 重命名场景
+ * @param {String} userId 
+ * @param {String} device_mac 
+ * @param {String} scene_name
+ */
+function renameScene(userId, { device_mac, scene_name }, cb) {
+  MysqlHelper.query('UPDATE `fish`.`f_scene` SET `scene_name` = ? WHERE `user_id` = ? AND `device_mac` = ?;', [scene_name, userId, device_mac], cb);
+}
+
+/**
  * 移除场景
  * @param {String} userId 
  * @param {String} device_mac 
@@ -133,5 +143,5 @@ function removeScene(userId, device_mac, cb) {
 function getAllScene(userId, cb) {
   MysqlHelper.query('SELECT `device_mac`,`scene_name` FROM `fish`.`f_scene` WHERE `user_id`=?;', [userId], cb);
 }
-module.exports = Object.assign(__ev, { getUserids, getDeviceMacs, addScene, removeScene, getAllScene });
+module.exports = Object.assign(__ev, { getUserids, getDeviceMacs, addScene, removeScene, getAllScene, renameScene });
 __init();

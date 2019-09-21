@@ -41,4 +41,16 @@ router.post('/remove_scene', function (req, res, next) {
   });
 });
 
+/**
+ * 重命名场景
+ */
+router.post('/rename_scene', function (req, res, next) {
+  serviceScene.renameScene(req.token.user_id, req.body, (err) => {
+    if (err) {
+      next(err);
+    } else {
+      res.send(JSON.stringify({ code: 1000 }));
+    }
+  });
+});
 module.exports = router;
