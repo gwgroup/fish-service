@@ -3,7 +3,7 @@ var config = require('../../config'),
   express = require('express'),
   router = express.Router(),
   BusinessError = require('../../utils/index').BusinessError,
-  openUrls = ['/api/user/login', '/api/user/send_vali_sms', '/api/util/get_info'];
+  openUrls = ['/user/login', '/user/send_vali_sms', '/util/get_info'];
 
 var tokenService = require('../../services/token'),
   userRouter = require('./user'),
@@ -14,7 +14,7 @@ var tokenService = require('../../services/token'),
   sceneRouter = require('./scene');
 
 router.use(function (req, res, next) {
-  if (openUrls.indexOf(req.originalUrl) != -1) {
+  if (openUrls.indexOf(req.path) != -1) {
     return next();
   }
   //1.用户是否持有token，没有提示无权限访问，请登录 return
