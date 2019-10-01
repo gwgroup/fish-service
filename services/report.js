@@ -27,7 +27,9 @@ data:    bin/www:6182 -   io_type: 'lamp' }
  * @param {Object} report 
  */
 function fill(clientId, report) {
-  MysqlHelper.query('INSERT INTO `fish`.`f_report` SET ?;', Object.assign({ device_mac: clientId }, report), (err) => {
+  let o1 = { plan_duration, io_code, io_name, io_type, weight_per_second } = report;
+  let obj = Object.assign({ device_mac: clientId, start_time: new Date(report.start_time), end_time: new Date(report.end_time) }, o1);
+  MysqlHelper.query('INSERT INTO `fish`.`f_report` SET ?;', obj, (err) => {
     if (err) {
       console.error(err, clientId, report);
     }
