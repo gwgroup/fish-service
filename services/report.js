@@ -27,15 +27,17 @@ data:    bin/www:6182 -   io_type: 'lamp' }
  * @param {Object} report 
  */
 function fill(clientId, report) {
-  let o1 = { plan_duration, io_code, io_name, io_type, weight_per_second } = report;
-  let obj = Object.assign(
-    {
+  let { plan_duration, io_code, io_name, io_type, weight_per_second } = report,
+    obj = {
       device_mac: clientId,
-      start_time: util.dateFormat(new Date(report.start_time), 'yyyy-MM-dd hh:mm:ss.SSS'),
-      end_time: util.dateFormat(new Date(report.end_time), 'yyyy-MM-dd hh:mm:ss.SSS')
-    },
-    o1
-  );
+      start_time: util.dateFormat(new Date(report.start_time), 'yyyy-MM-dd hh:mm:ss.S'),
+      end_time: util.dateFormat(new Date(report.end_time), 'yyyy-MM-dd hh:mm:ss.S'),
+      plan_duration,
+      io_code,
+      io_name,
+      io_type,
+      weight_per_second
+    };
   MysqlHelper.query('INSERT INTO `fish`.`f_report` SET ?;', obj, (err) => {
     if (err) {
       console.error(err, obj);
