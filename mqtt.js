@@ -62,7 +62,7 @@ var run = function () {
 */
 var messageHandler = function (topic, message) {
   try {
-    console.log(topic, message.toString('utf8'));
+    //console.log(topic, message.toString('utf8'));
     let topicObj = util.parseTopic(topic),
       body = JSON.parse(message.toString('utf8'));
     switch (body.type) {
