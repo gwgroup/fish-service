@@ -28,10 +28,10 @@ data:    bin/www:6182 -   io_type: 'lamp' }
  */
 function fill(clientId, report) {
   let o1 = { plan_duration, io_code, io_name, io_type, weight_per_second } = report;
-  let obj = Object.assign({ device_mac: clientId, start_time: new Date(report.start_time), end_time: new Date(report.end_time) }, o1);
+  let obj = Object.assign({ device_mac: clientId, start_time: util.dateFormat(new Date(report.start_time), 'yyyy-MM-dd hh:mm:ss.SSS'), end_time: util.dateFormat(new Date(report.end_time), 'yyyy-MM-dd hh:mm:ss.SSS') }, o1);
   MysqlHelper.query('INSERT INTO `fish`.`f_report` SET ?;', obj, (err) => {
     if (err) {
-      console.error(err, clientId, report);
+      console.error(err, obj);
     }
   });
 }
