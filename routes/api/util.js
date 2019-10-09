@@ -25,7 +25,7 @@ router.get('/ed_stream_can_be_release', function (req, res, next) {
   });
 });
 //文件上传
-router.post('/file_upload', upload.single('screenshot'), function (req, res, next) {
+router.post('/file_upload', fishScreenshot.single('screenshot'), function (req, res, next) {
   // req.file 是 `avatar` 文件的信息
   // req.body 将具有文本域数据，如果存在的话
   console.log(req.file);
