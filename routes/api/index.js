@@ -3,7 +3,7 @@ var config = require('../../config'),
   express = require('express'),
   router = express.Router(),
   BusinessError = require('../../utils/index').BusinessError,
-  openUrls = ['/user/login', '/user/send_vali_sms', '/util/get_info', '/util/ed_stream_can_be_release'];
+  openUrls = ['/user/login', '/user/send_vali_sms', '/util/get_info', '/util/ed_stream_can_be_release', '/util/file_upload'];
 
 var tokenService = require('../../services/token'),
   userRouter = require('./user'),
