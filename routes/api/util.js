@@ -13,7 +13,7 @@ router.get('/get_info', function (req, res, next) {
 
 //获取rtsp的推流是否可以释放
 router.get('/ed_stream_can_be_release', function (req, res, next) {
-  let q = req.params.q;
+  let q = req.query.q;
   easyDarwinService.canBeRelease(q, (err, result) => {
     if (err) {
       return next(err);
