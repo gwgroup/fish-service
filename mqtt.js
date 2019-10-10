@@ -118,8 +118,9 @@ var sendAllClient = function (body) {
  * @param {String} clientId 
  * @param {Object} body 
  * @param {Function} cb 
+ * @param {Number} timeout
  */
-var rpc = function (clientId, body, cb) {
+var rpc = function (clientId, body, cb, timeout = 5000) {
   if (client && client.connected) {
     let id = util.generateID(),
       evName = `rpc_${id}`,
@@ -134,7 +135,7 @@ var rpc = function (clientId, body, cb) {
     qTimeout = setTimeout(() => {
       __ev.removeListener(evName, tHandler);
       return cb(util.BusinessError.create(CODES.rpcTimeout));
-    }, 5000);
+    }, timeout);
   } else {
     return cb(util.BusinessError.create(CODES.serverError));
   }
