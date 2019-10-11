@@ -70,4 +70,18 @@ router.post('/switch_profile', function (req, res, next) {
   });
 });
 
+
+/**
+ * 移动
+ */
+router.post('/move', function (req, res, next) {
+  camService.move(req.body, (err) => {
+    if (err) {
+      next(err);
+    } else {
+      res.send(JSON.stringify({ code: 1000 }));
+    }
+  });
+});
+
 module.exports = router;
