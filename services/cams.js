@@ -12,7 +12,7 @@ MQTT 发送内容格式
 通知停止推流
 {"id":"231211","sub_type":9004,"cam_key":"192168247"}
 */
-let ACTION_CODES = Object.freeze({ SCAN: 9001, GET_CAMS_CONFIG: 9002, START_PUSH: 9003, STOP_PUSH: 9004, SWITCH_PROFILE: 9005, MOVE: 9006 });
+let ACTION_CODES = Object.freeze({ SCAN: 9001, GET_CAMS_CONFIG: 9002, START_PUSH: 9003, STOP_PUSH: 9004, SWITCH_PROFILE: 9005, MOVE: 9006, AUTH: 9007 });
 var mqtt = require('../mqtt');
 var util = require('../utils/index');
 
@@ -118,4 +118,24 @@ function move(params, cb) {
   });
 }
 
-module.exports = { play, stop, scan, getConfig, switchProfile, move };
+
+/**
+ * 验证摄像头口令
+ * @param {Object} params 
+  * @param {Function} cb
+ */
+function auth(params, cb) {
+  let { device_mac, cam_key, password } = params;
+  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.AUTH, cam_key, password }, (err, result) => {
+    if (err) {
+      return cb(err);
+    }
+    if (result.error) {
+      return cb(new util.BusinessError(result.error.code, result.error.message));
+    }
+    cb(undefined, result.data);
+  }, 15000);
+}
+
+
+module.exports = { play, stop, scan, getConfig, switchProfile, move, auth };

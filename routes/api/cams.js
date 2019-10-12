@@ -84,4 +84,18 @@ router.post('/move', function (req, res, next) {
   });
 });
 
+/**
+ * 验证摄像头口令
+ *  
+ */
+router.post('/auth', function (req, res, next) {
+  camService.auth(req.body, (err, result) => {
+    if (err) {
+      next(err);
+    } else {
+      res.send(JSON.stringify({ code: 1000, data: result }));
+    }
+  });
+});
+
 module.exports = router;
