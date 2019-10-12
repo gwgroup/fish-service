@@ -41,6 +41,10 @@ var run = function () {
     sendAllClient({ sub_type: MESSAGE_TYPE_STATUS });
     //通知所有客户端上报设备状态
   });
+  client.on("reconnect", function () {
+    sendAllClient({ sub_type: MESSAGE_TYPE_STATUS });
+    //通知所有客户端上报设备状态
+  });
   client.on("message", messageHandler);
 };
 
