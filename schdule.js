@@ -5,4 +5,5 @@ var reportService = require('./services/report');
  */
 schedule.scheduleJob('gather_sensor_data', '0 0,30 * * * *', reportService.gatherSensorData);
 
+console.log('3.调度任务加载完成');
 module.exports = schedule;
