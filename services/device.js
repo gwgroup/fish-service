@@ -5,17 +5,17 @@ let ACTION_CODES = Object.freeze({ EXEC: 3004, OPEN: 4001, CLOSE: 4002, GET_IO_S
 var deviceStatus = new Map();
 mqtt.on('online', function (topic) {
   __filterInsertStatus(topic.clientId);
-  deviceStatus[topic.clientId].online = 1;
+  deviceStatus.get(topic.clientId).online = 1;
   __noticeDeviceStatusToApp(topic.clientId);
 });
 mqtt.on('offline', function (topic) {
   __filterInsertStatus(topic.clientId, true);
-  deviceStatus[topic.clientId].online = 0;
+  deviceStatus.get(topic.clientId).online = 0;
   __noticeDeviceStatusToApp(topic.clientId);
 });
 mqtt.on('status', function (topic, status) {
   __filterInsertStatus(topic.clientId);
-  Object.assign(deviceStatus[topic.clientId].status, status);
+  Object.assign(deviceStatus.get(topic.clientId).status, status);
   __noticeDeviceStatusToApp(topic.clientId);
 });
 
@@ -40,8 +40,8 @@ serviceScene.on('addscene', function (userId, device_mac) {
  * @param {Boolean} offline 是否下线
  */
 function __filterInsertStatus(clientId, offline) {
-  if (!deviceStatus[clientId]) {
-    deviceStatus[clientId] = { online: offline ? 0 : 1, status: { water_temperature: null, o2: null, ph: null } };
+  if (!deviceStatus.has(clientId)) {
+    deviceStatus.set(clientId, { online: offline ? 0 : 1, status: { water_temperature: null, o2: null, ph: null } });
   }
 }
 
@@ -50,7 +50,7 @@ function __filterInsertStatus(clientId, offline) {
  * @param {String} clientId 
  */
 function __noticeDeviceStatusToApp(clientId) {
-  let obj = deviceStatus[clientId];
+  let obj = deviceStatus.get(clientId);
   let uids = serviceScene.getUserids(clientId);
   ws.sendDataWithUsers(uids, { type: 1, device_mac: clientId, data: obj });
 }
@@ -74,7 +74,7 @@ function updateReset(clientId) {
  */
 function getDeviceStatus(clientId) {
   __filterInsertStatus(clientId, true);
-  return deviceStatus[clientId];
+  return deviceStatus.get(clientId);
 }
 
 /**
