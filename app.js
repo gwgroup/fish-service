@@ -4,9 +4,9 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 var util = require('./utils/index');
-
 var apiRouter = require('./routes/api/index');
 var app = express();
+require('./schdule');
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

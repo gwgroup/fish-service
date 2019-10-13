@@ -1,5 +1,4 @@
 var mqtt = require('../mqtt');
-var serviceReport = require('./report');
 var serviceScene = require('./scene');
 var ws = require('../ws');
 let ACTION_CODES = Object.freeze({ EXEC: 3004, OPEN: 4001, CLOSE: 4002, GET_IO_SETTING: 4011, GET_PLAN_SETTING: 4012, GET_TRIGGER_SETTING: 4013 });
@@ -18,10 +17,6 @@ mqtt.on('status', function (topic, status) {
   __filterInsertStatus(topic.clientId);
   Object.assign(deviceStatus[topic.clientId].status, status);
   __noticeDeviceStatusToApp(topic.clientId);
-});
-mqtt.on('report', function (topic, report) {
-  //__filterInsertStatus(topic.clientId);
-  serviceReport.fill(topic.clientId, report);
 });
 
 ws.on('connect', (con) => {
@@ -46,7 +41,7 @@ serviceScene.on('addscene', function (userId, device_mac) {
  */
 function __filterInsertStatus(clientId, offline) {
   if (!deviceStatus[clientId]) {
-    deviceStatus[clientId] = { online: offline ? 0 : 1, status: {} };
+    deviceStatus[clientId] = { online: offline ? 0 : 1, status: { water_temperature: null, o2: null, ph: null } };
   }
 }
 
@@ -109,6 +104,11 @@ function close(clientId, ioCode, cb) {
   mqtt.rpc(clientId, { io_code: ioCode, sub_type: ACTION_CODES.CLOSE }, cb);
 }
 
+/**
+ * 获取所有设备状态数据
+ */
+function getAllDeviceStatus() {
+  return deviceStatus;
+}
 
-
-module.exports = { open, close, getDeviceStatus, updateReset };
+module.exports = { open, close, getDeviceStatus, updateReset, getAllDeviceStatus };
