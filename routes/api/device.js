@@ -31,6 +31,7 @@ router.post('/close', function (req, res, next) {
     }
   });
 });
+
 /**
  * 获取io信息
  */
@@ -94,6 +95,14 @@ router.post('/calibration_feeder', function (req, res, next) {
       res.send(JSON.stringify({ code: 1000 }));
     }
   });
+});
+
+/**
+ * 获取设备状态数据
+ */
+router.post('/get_device_status', function (req, res) {
+  let device_mac = req.body.device_mac;
+  res.send(JSON.stringify({ code: 1000, data: service.getAllDeviceStatus().get(device_mac) }));
 });
 
 module.exports = router;

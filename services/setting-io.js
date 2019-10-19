@@ -1,4 +1,4 @@
-let ACTION_CODES = Object.freeze({ ADD_IO: 8001, REMOVE_IO: 8002, ENABLE_IO: 8003, DISABLE_IO: 8004, GET_ALL_IO: 8005, RENAME_IO: 8006, CALIBRATION_FEEDER: 8007 });
+let ACTION_CODES = Object.freeze({ ADD_IO: 8001, REMOVE_IO: 8002, ENABLE_IO: 8003, DISABLE_IO: 8004, GET_ALL_IO: 8005, RENAME_IO: 8006, CALIBRATION_FEEDER: 8007, POWER: 8008 });
 let mqtt = require('../mqtt');
 /**
  * 获取IO信息
@@ -72,4 +72,15 @@ function calibrationFeeder(device_mac, io_code, weight_per_second, cb) {
   mqtt.rpc(device_mac, { sub_type: ACTION_CODES.CALIBRATION_FEEDER, io: { code: io_code, weight_per_second } }, cb);
 }
 
-module.exports = { getIoInfo, addIo, removeIo, renameIo, enableIo, disableIo, calibrationFeeder };
+/**
+ * 设置功耗 
+ * @param {String} device_mac 
+ * @param {String} io_code 
+ * @param {Number} power_kw 功耗，千瓦 
+ * @param {Function} cb 
+ */
+function power(device_mac, io_code, power_kw, cb) {
+  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.POWER, io: { code: io_code, power_kw: power_kw ? power_kw : null } }, cb);
+}
+
+module.exports = { getIoInfo, addIo, removeIo, renameIo, enableIo, disableIo, calibrationFeeder, power };
