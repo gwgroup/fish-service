@@ -98,6 +98,19 @@ router.post('/calibration_feeder', function (req, res, next) {
 });
 
 /**
+ * 设置功耗
+ */
+router.post('/power', function (req, res, next) {
+  ioSettingService.power(req.body.device_mac, req.body.code, req.body.power_kw, (err) => {
+    if (err) {
+      next(err);
+    } else {
+      res.send(JSON.stringify({ code: 1000 }));
+    }
+  });
+});
+
+/**
  * 获取设备状态数据
  */
 router.post('/get_device_status', function (req, res) {
