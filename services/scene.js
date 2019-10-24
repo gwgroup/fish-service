@@ -163,6 +163,9 @@ adapter.on('device_status_change', function (device_mac, data) {
   adapter.ws.sendDataWithUsers(uids, { type: 1, device_mac, data });
 });
 
+/**
+ * 有app用户连接时，发送给用户所属设备状态
+ */
 adapter.ws.on('connect', (con) => {
   let userid = con.userId;
   let macs = getDeviceMacs(userid);
