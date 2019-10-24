@@ -1,3 +1,5 @@
+var BusinessError = require('../utils/business-error');
+var config = require('../config');
 var mqtt = require('../mqtt');
 var serviceScene = require('./scene');
 var ws = require('../ws');
@@ -86,7 +88,7 @@ function getDeviceStatus(clientId) {
 function open(clientId, ioCode, duration, cb) {
   let cdi = getDeviceStatus(clientId);
   if (cdi[ioCode] && cdi[ioCode].opened) {
-    return cb(new Error("设备已经启动，不需要重复操作"));
+    return cb(BusinessError.create(config.codes.repeatOpen));
   }
   mqtt.rpc(clientId, { io_code: ioCode, duration, sub_type: ACTION_CODES.OPEN }, cb);
 }
@@ -99,7 +101,7 @@ function open(clientId, ioCode, duration, cb) {
 function close(clientId, ioCode, cb) {
   let cdi = getDeviceStatus(clientId);
   if (cdi[ioCode] && !cdi[ioCode].opened) {
-    return cb(new Error("设备已经关闭，不需要重复操作"));
+    return cb(BusinessError.create(config.codes.repeatClose));
   }
   mqtt.rpc(clientId, { io_code: ioCode, sub_type: ACTION_CODES.CLOSE }, cb);
 }
