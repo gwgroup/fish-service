@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 var service = require('../../services/device');
 var ioSettingService = require('../../services/setting-io');
-
+var adapter = require('../../adapter');
 //const CLIENT_ID = "b827eb540371";//0000000055ed
 
 /* 启动 */
@@ -115,7 +115,7 @@ router.post('/power', function (req, res, next) {
  */
 router.post('/get_device_status', function (req, res) {
   let device_mac = req.body.device_mac;
-  res.send(JSON.stringify({ code: 1000, data: service.getAllDeviceStatus().get(device_mac) }));
+  res.send(JSON.stringify({ code: 1000, data: adapter.getDeviceStatus(device_mac) }));
 });
 
 module.exports = router;

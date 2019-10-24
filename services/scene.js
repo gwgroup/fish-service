@@ -1,9 +1,8 @@
 var
   async = require('async'),
   util = require('../utils/index'),
-  MysqlHelper = util.MysqlHelper,
-  EventEmitter = require('events').EventEmitter,
-  __ev = new EventEmitter();
+  MysqlHelper = util.MysqlHelper;
+var adapter = require('../adapter');
 let maps = new Map();
 
 /*
@@ -45,7 +44,7 @@ function __init() {
  * 获取所有相关设备的用户ID
  * @param {String} device_mac 
  */
-function getUserids(device_mac) {
+function __getUseridsWithDeviceMac(device_mac) {
   return maps.has(device_mac) ? maps.get(device_mac) : [];
 }
 /**
@@ -101,7 +100,7 @@ function addScene(userId, { device_mac, scene_name }, cb) {
       MysqlHelper.query('INSERT INTO `fish`.`f_scene` (`user_id`,`device_mac`,`scene_name`) VALUES (?,?,?);', [userId, device_mac, scene_name], cb);
     }, (result, fields, cb) => {
       __freshUserids(device_mac, cb);
-      __ev.emit('addscene', userId, device_mac);
+      _noticeNewDeviceStatus(userId, device_mac);
     }
   ], (err) => {
     cb(err);
@@ -143,5 +142,26 @@ function removeScene(userId, device_mac, cb) {
 function getAllScene(userId, cb) {
   MysqlHelper.query('SELECT `device_mac`,`scene_name` FROM `fish`.`f_scene` WHERE `user_id`=?;', [userId], cb);
 }
-module.exports = Object.assign(__ev, { getUserids, getDeviceMacs, addScene, removeScene, getAllScene, renameScene });
+
+
+/**
+ * 通知新添加设备状态到APP用户
+ * @param {*} userId 
+ * @param {*} device_mac 
+ */
+function _noticeNewDeviceStatus(userId, device_mac) {
+  //用户添加场景,触发发送设备状态到ws
+  let data = { type: 1, device_mac, data: adapter.getDeviceStatus(device_mac) };
+  adapter.ws.sendDataWithUsers([userId], data);
+}
+
+/**
+ * 设备状态变更触发发送给app用户设备状态数据
+ */
+adapter.on('device_status_change', function (device_mac, data) {
+  let uids = __getUseridsWithDeviceMac(device_mac);
+  adapter.ws.sendDataWithUsers(uids, { type: 1, device_mac, data });
+});
+
+module.exports = { getDeviceMacs, addScene, removeScene, getAllScene, renameScene };
 __init();

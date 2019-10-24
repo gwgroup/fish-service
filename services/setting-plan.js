@@ -1,5 +1,5 @@
 let ACTION_CODES = Object.freeze({ ADD_PLAN: 6001, REMOVE_PLAN: 6002, ENABLE_PLAN: 6003, DISABLE_PLAN: 6004, GET_ALL_PLAN: 6005, EDIT_PLAN: 6009 });
-let mqtt = require('../mqtt');
+let adapter = require('../adapter');
 let util = require('../utils/index');
 /**
  * 获取所有计划信息
@@ -7,7 +7,7 @@ let util = require('../utils/index');
  * @param {Function} cb 
  */
 function getAllPlan(device_mac, cb) {
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.GET_ALL_PLAN }, (err, result) => {
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.GET_ALL_PLAN }, (err, result) => {
     cb(err, result ? result.data : undefined);
   });
 }
@@ -30,7 +30,7 @@ function addPlan(device_mac, params, cb) {
     enabled
   } = params;
   plan.id = util.generateUUID();
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.ADD_PLAN, plan }, cb);
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.ADD_PLAN, plan }, cb);
 }
 
 /**
@@ -40,7 +40,7 @@ function addPlan(device_mac, params, cb) {
  * @param {Function} cb 
  */
 function removePlan(device_mac, plan_id, cb) {
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.REMOVE_PLAN, plan: { id: plan_id } }, cb);
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.REMOVE_PLAN, plan: { id: plan_id } }, cb);
 }
 
 /**
@@ -50,7 +50,7 @@ function removePlan(device_mac, plan_id, cb) {
  * @param {Function} cb 
  */
 function enablePlan(device_mac, plan_id, cb) {
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.ENABLE_PLAN, plan: { id: plan_id } }, cb);
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.ENABLE_PLAN, plan: { id: plan_id } }, cb);
 }
 
 /**
@@ -60,7 +60,7 @@ function enablePlan(device_mac, plan_id, cb) {
  * @param {Function} cb
  */
 function disablePlan(device_mac, plan_id, cb) {
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.DISABLE_PLAN, plan: { id: plan_id } }, cb);
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.DISABLE_PLAN, plan: { id: plan_id } }, cb);
 }
 
 
@@ -83,7 +83,7 @@ function editPlan(device_mac, params, cb) {
     duration,
     enabled
   } = params;
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.EDIT_PLAN, plan }, cb);
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.EDIT_PLAN, plan }, cb);
 }
 
 module.exports = { getAllPlan, addPlan, removePlan, enablePlan, disablePlan, editPlan };

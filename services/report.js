@@ -1,9 +1,6 @@
 var util = require('../utils/index'),
   MysqlHelper = util.MysqlHelper,
-  mqtt = require('../mqtt'),
-  deviceService = require('./device');
-
-
+  adapter = require('../adapter');
 
 /*
 { start_time: 1569917055526,
@@ -21,7 +18,7 @@ data:    bin/www:6182 -   io_code: 'lamp1',
 data:    bin/www:6182 -   io_name: '灯',
 data:    bin/www:6182 -   io_type: 'lamp' }
 */
-mqtt.on('report', function (topic, report) {
+adapter.mqtt.on('report', function (topic, report) {
   fill(topic.clientId, report);
 });
 
@@ -61,7 +58,7 @@ function fill(clientId, report) {
  * @param {String} fireTime
  */
 function gatherSensorData(fireTime) {
-  let ds = deviceService.getAllDeviceStatus();
+  let ds = adapter.getAllDeviceStatus();
   let result = [];
   ds.forEach((val, device_mac) => {
     if (val.online) {
@@ -92,5 +89,3 @@ function gatherSensorData(fireTime) {
 }
 
 module.exports = { fill, gatherSensorData };
-
-

@@ -13,7 +13,7 @@ MQTT 发送内容格式
 {"id":"231211","sub_type":9004,"cam_key":"192168247"}
 */
 let ACTION_CODES = Object.freeze({ SCAN: 9001, GET_CAMS_CONFIG: 9002, START_PUSH: 9003, STOP_PUSH: 9004, SWITCH_PROFILE: 9005, MOVE: 9006, AUTH: 9007 });
-var mqtt = require('../mqtt');
+var adapter = require('../adapter');
 var util = require('../utils/index');
 
 /**
@@ -23,7 +23,7 @@ var util = require('../utils/index');
  */
 function play(params, cb) {
   let { device_mac, cam_key } = params;
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.START_PUSH, cam_key }, (err, result) => {
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.START_PUSH, cam_key }, (err, result) => {
     if (err) {
       return cb(err);
     }
@@ -41,7 +41,7 @@ function play(params, cb) {
  */
 function getConfig(params, cb) {
   let { device_mac } = params;
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.GET_CAMS_CONFIG }, (err, result) => {
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.GET_CAMS_CONFIG }, (err, result) => {
     if (err) {
       return cb(err);
     }
@@ -56,7 +56,7 @@ function getConfig(params, cb) {
  */
 function scan(params, cb) {
   let { device_mac } = params;
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.SCAN }, (err, result) => {
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.SCAN }, (err, result) => {
     if (err) {
       return cb(err);
     }
@@ -74,7 +74,7 @@ function scan(params, cb) {
  */
 function switchProfile(params, cb) {
   let { device_mac, cam_key, profile_token } = params;
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.SWITCH_PROFILE, cam_key, profile_token }, (err, result) => {
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.SWITCH_PROFILE, cam_key, profile_token }, (err, result) => {
     if (err) {
       return cb(err);
     }
@@ -92,7 +92,7 @@ function switchProfile(params, cb) {
  */
 function stop(params, cb) {
   let { device_mac, cam_key } = params;
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.STOP_PUSH, cam_key }, (err, result) => {
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.STOP_PUSH, cam_key }, (err, result) => {
     if (err) {
       return cb(err);
     }
@@ -110,7 +110,7 @@ function stop(params, cb) {
  */
 function move(params, cb) {
   let { device_mac, cam_key, pan } = params;
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.MOVE, cam_key, pan }, (err) => {
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.MOVE, cam_key, pan }, (err) => {
     if (err) {
       return cb(err);
     }
@@ -126,7 +126,7 @@ function move(params, cb) {
  */
 function auth(params, cb) {
   let { device_mac, cam_key, password } = params;
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.AUTH, cam_key, password }, (err, result) => {
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.AUTH, cam_key, password }, (err, result) => {
     if (err) {
       return cb(err);
     }

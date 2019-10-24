@@ -5,14 +5,14 @@ var fs = require('fs');
 var multer = require('multer');
 var path = require('path');
 var fishScreenshot = multer({ dest: path.join(__dirname, '../../../fish-screenshot/') });
-var deviceService = require('../../services/device');
+var adapter = require('../../adapter');
 var easyDarwinService = require('../../services/easy-darwin');
 const SCREENSHOT_URL = require('../../config/index').openUrls.screenshotUrl;
 //上报设备信息
 router.get('/get_info', function (req, res, next) {
   let client_id = req.param("client_id");
   let ip = util.getClientIp(req);
-  deviceService.getDeviceStatus(client_id).ip = ip;
+  adapter.getDeviceStatus(client_id).ip = ip;
   res.send(JSON.stringify({ code: 1000, data: { local_ip: ip, server_timestamp: Date.now() } }));
 });
 

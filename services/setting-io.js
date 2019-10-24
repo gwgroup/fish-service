@@ -1,12 +1,12 @@
 let ACTION_CODES = Object.freeze({ ADD_IO: 8001, REMOVE_IO: 8002, ENABLE_IO: 8003, DISABLE_IO: 8004, GET_ALL_IO: 8005, RENAME_IO: 8006, CALIBRATION_FEEDER: 8007, POWER: 8008 });
-let mqtt = require('../mqtt');
+var adapter = require('../adapter');
 /**
  * 获取IO信息
  * @param {Object} param0 
  * @param {Function} cb 
  */
 function getIoInfo({ device_mac }, cb) {
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.GET_ALL_IO }, (err, result) => {
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.GET_ALL_IO }, (err, result) => {
     cb(err, result ? result.data : undefined);
   });
 }
@@ -18,7 +18,7 @@ function getIoInfo({ device_mac }, cb) {
  */
 function addIo(device_mac, params, cb) {
   let io = { code, type, name="空", pin, weight_per_second, enabled=true } = params;
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.ADD_IO, io }, cb);
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.ADD_IO, io }, cb);
 }
 
 /**
@@ -28,7 +28,7 @@ function addIo(device_mac, params, cb) {
  * @param {Function} cb 
  */
 function removeIo(device_mac, io_code, cb) {
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.REMOVE_IO, io: { code: io_code } }, cb);
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.REMOVE_IO, io: { code: io_code } }, cb);
 }
 /**
  * 重命名IO
@@ -38,7 +38,7 @@ function removeIo(device_mac, io_code, cb) {
  * @param {Function} cb 
  */
 function renameIo(device_mac, io_code, io_name, cb) {
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.RENAME_IO, io: { code: io_code, name: io_name } }, cb);
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.RENAME_IO, io: { code: io_code, name: io_name } }, cb);
 }
 
 /**
@@ -48,7 +48,7 @@ function renameIo(device_mac, io_code, io_name, cb) {
  * @param {Function} cb 
  */
 function enableIo(device_mac, io_code, cb) {
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.ENABLE_IO, io: { code: io_code } }, cb);
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.ENABLE_IO, io: { code: io_code } }, cb);
 }
 
 /**
@@ -58,7 +58,7 @@ function enableIo(device_mac, io_code, cb) {
  * @param {Function} cb
  */
 function disableIo(device_mac, io_code, cb) {
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.DISABLE_IO, io: { code: io_code } }, cb);
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.DISABLE_IO, io: { code: io_code } }, cb);
 }
 
 /**
@@ -69,7 +69,7 @@ function disableIo(device_mac, io_code, cb) {
  * @param {Function} cb 
  */
 function calibrationFeeder(device_mac, io_code, weight_per_second, cb) {
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.CALIBRATION_FEEDER, io: { code: io_code, weight_per_second } }, cb);
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.CALIBRATION_FEEDER, io: { code: io_code, weight_per_second } }, cb);
 }
 
 /**
@@ -80,7 +80,7 @@ function calibrationFeeder(device_mac, io_code, weight_per_second, cb) {
  * @param {Function} cb 
  */
 function power(device_mac, io_code, power_kw, cb) {
-  mqtt.rpc(device_mac, { sub_type: ACTION_CODES.POWER, io: { code: io_code, power_kw: power_kw ? power_kw : null } }, cb);
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.POWER, io: { code: io_code, power_kw: power_kw ? power_kw : null } }, cb);
 }
 
 module.exports = { getIoInfo, addIo, removeIo, renameIo, enableIo, disableIo, calibrationFeeder, power };
