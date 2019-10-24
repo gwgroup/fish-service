@@ -163,5 +163,12 @@ adapter.on('device_status_change', function (device_mac, data) {
   adapter.ws.sendDataWithUsers(uids, { type: 1, device_mac, data });
 });
 
+adapter.ws.on('connect', (con) => {
+  let userid = con.userId;
+  let macs = getDeviceMacs(userid);
+  macs.forEach((device_mac) => {
+    adapter.ws.sendData(con, { type: 1, device_mac, data: adapter.getDeviceStatus(device_mac) });
+  });
+});
 module.exports = { getDeviceMacs, addScene, removeScene, getAllScene, renameScene };
 __init();

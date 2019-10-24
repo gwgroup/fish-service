@@ -63,15 +63,6 @@ function getAllDeviceStatus() {
   return deviceStatus;
 }
 
-ws.on('connect', (con) => {
-  let userid = con.userId;
-  let macs = serviceScene.getDeviceMacs(userid);
-  macs.forEach((mac) => {
-    let data = { type: 1, device_mac: mac, data: getDeviceStatus(mac) };
-    ws.sendData(con, data);
-  });
-});
-
 /**
  * 通知设备状态到所有绑定了设备的APP用户
  * @param {String} clientId 设备客户端id
