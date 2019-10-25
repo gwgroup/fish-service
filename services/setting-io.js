@@ -76,11 +76,11 @@ function calibrationFeeder(device_mac, io_code, weight_per_second, cb) {
  * 设置功耗 
  * @param {String} device_mac 
  * @param {String} io_code 
- * @param {Number} power_kw 功耗，千瓦 
+ * @param {Number} power_w 功耗，千瓦 
  * @param {Function} cb 
  */
-function power(device_mac, io_code, power_kw, cb) {
-  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.POWER, io: { code: io_code, power_kw: power_kw ? power_kw : null } }, cb);
+function power(device_mac, io_code, power_w, cb) {
+  adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.POWER, io: { code: io_code, power_w: power_w ? power_w : null } }, cb);
 }
 
 module.exports = { getIoInfo, addIo, removeIo, renameIo, enableIo, disableIo, calibrationFeeder, power };

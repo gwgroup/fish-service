@@ -28,10 +28,10 @@ adapter.mqtt.on('report', function (topic, report) {
  * @param {Object} report 
  */
 function fill(clientId, report) {
-  let { plan_duration, io_code, io_name, io_type, weight_per_second, power_kw } = report,
+  let { plan_duration, io_code, io_name, io_type, weight_per_second, power_w } = report,
     actual_duration = report.end_time - report.start_time,
     actual_weight = weight_per_second ? parseFloat((weight_per_second * actual_duration / 1000).toFixed(2)) : null,
-    kwh = power_kw ? parseFloat((power_kw * actual_duration / 3600000).toFixed(5)) : null;
+    kwh = power_w ? parseFloat((power_w * actual_duration / 3600000).toFixed(5)) : null;
   obj = {
     device_mac: clientId,
     start_time: util.dateFormat(new Date(report.start_time), 'yyyy-MM-dd hh:mm:ss.S'),
@@ -43,7 +43,7 @@ function fill(clientId, report) {
     io_name,
     io_type,
     weight_per_second,
-    power_kw,
+    power_w,
     kwh
   };
   MysqlHelper.query('INSERT INTO `fish`.`f_report` SET ?;', obj, (err) => {

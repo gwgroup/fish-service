@@ -101,7 +101,7 @@ router.post('/calibration_feeder', function (req, res, next) {
  * 设置功耗
  */
 router.post('/power', function (req, res, next) {
-  ioSettingService.power(req.body.device_mac, req.body.code, req.body.power_kw, (err) => {
+  ioSettingService.power(req.body.device_mac, req.body.code, req.body.power_w, (err) => {
     if (err) {
       next(err);
     } else {
