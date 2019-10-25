@@ -31,7 +31,7 @@ function fill(clientId, report) {
   let { plan_duration, io_code, io_name, io_type, weight_per_second, power_w } = report,
     actual_duration = report.end_time - report.start_time,
     actual_weight = weight_per_second ? parseFloat((weight_per_second * actual_duration / 1000).toFixed(2)) : null,
-    kwh = power_w ? parseFloat((power_w * actual_duration / 3600000).toFixed(5)) : null;
+    kwh = power_w ? parseFloat((power_w * actual_duration / 3600000 / 1000).toFixed(5)) : null;
   obj = {
     device_mac: clientId,
     start_time: util.dateFormat(new Date(report.start_time), 'yyyy-MM-dd hh:mm:ss.S'),
