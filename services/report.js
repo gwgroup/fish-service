@@ -240,7 +240,7 @@ function getKwhData(params, cb) {
     \`kwh\`
   FROM
     \`fish\`.\`f_report\`
-  WHERE \`device_mac\`=?  AND power_w IS NOT NULL AND DATE(\`create_time\`)>=? AND DATE(\`create_time\`)<=?;
+  WHERE \`device_mac\`=?  AND power_w IS NOT NULL AND DATE(\`end_time\`)>=? AND DATE(\`end_time\`)<=?;
   `, [device_mac, start_date, end_date], cb);
 }
 /**
@@ -263,7 +263,7 @@ function getFeedData(params, cb) {
     \`actual_weight\`
   FROM
     \`fish\`.\`f_report\`
-  WHERE \`device_mac\`=? AND actual_weight IS NOT NULL AND DATE(\`create_time\`)>=? AND DATE(\`create_time\`)<=?;
+  WHERE \`device_mac\`=? AND actual_weight IS NOT NULL AND DATE(\`end_time\`)>=? AND DATE(\`end_time\`)<=?;
   `, [device_mac, start_date, end_date], cb);
 }
 
@@ -285,7 +285,7 @@ function getAerationData(params, cb) {
     \`actual_duration\`
   FROM
     \`fish\`.\`f_report\`
-  WHERE \`device_mac\`=? AND io_type='aerator' AND DATE(\`create_time\`)>=? AND DATE(\`create_time\`)<=?;
+  WHERE \`device_mac\`=? AND io_type='aerator' AND DATE(\`end_time\`)>=? AND DATE(\`end_time\`)<=?;
   `, [device_mac, start_date, end_date], cb);
 }
 module.exports = { fill, gatherSensorData, getPreview, getSensorData, getKwhData, getFeedData, getAerationData };
