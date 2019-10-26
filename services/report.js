@@ -288,4 +288,49 @@ function getAerationData(params, cb) {
   WHERE \`device_mac\`=? AND io_type='aerator' AND DATE(\`end_time\`)>=? AND DATE(\`end_time\`)<=?;
   `, [device_mac, start_date, end_date], cb);
 }
-module.exports = { fill, gatherSensorData, getPreview, getSensorData, getKwhData, getFeedData, getAerationData };
+
+/**
+ * 所有事件
+ * @param {Object} params 
+ * @param {Function} cb 
+ */
+function getEvents(params, cb) {
+  let { device_mac, io_codes, page_index, page_size } = params;
+  let tjIoCodes = '';
+  if (io_codes && io_codes.length) {
+    io_codes.forEach((str, index) => {
+      io_codes[index] = `'${str}'`;
+    });
+    tjIoCodes = ` AND io_code IN (${io_codes.join(',')})`;
+  }
+  MysqlHelper.query(`
+    SELECT
+    COUNT(*) total_count
+    FROM
+      \`fish\`.\`f_report\`
+    WHERE device_mac=? ${tjIoCodes};
+    SELECT
+      \`id\`,
+      \`io_name\`,
+      \`io_code\`,
+      \`io_type\`,
+      \`start_time\`,
+      \`end_time\`,
+      \`plan_duration\`,
+      \`actual_duration\`,
+      \`actual_weight\`,
+      \`weight_per_second\`,
+      \`power_w\`,
+      \`kwh\`
+    FROM
+      \`fish\`.\`f_report\`
+    WHERE device_mac=? ${tjIoCodes}
+    ORDER BY start_time DESC
+    LIMIT ?, ?;`,
+    [device_mac, device_mac, page_index * page_size, page_size],
+    (err, results) => {
+      if (err) { return cb(err); }
+      cb(undefined, { total: results[0][0]["total_count"], rows: results[1] });
+    });
+}
+module.exports = { fill, gatherSensorData, getPreview, getSensorData, getKwhData, getFeedData, getAerationData, getEvents };

@@ -82,4 +82,20 @@ router.post('/get_aeration_data', function (req, res, next) {
     }
   });
 });
+
+/**
+ * 查询所有事件
+ */
+router.post('/get_events', function (req, res, next) {
+  if (!util.checkRequiredParams(['device_mac', 'page_index', 'page_size'], req.body)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
+  reportService.getEvents(req.body, (err, result) => {
+    if (err) {
+      next(err);
+    } else {
+      res.send(JSON.stringify({ code: 1000, data: result }));
+    }
+  });
+});
 module.exports = router;
