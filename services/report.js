@@ -202,5 +202,90 @@ function __fillPreviewData(baseObj, data) {
     baseObj[key] = data[key];
   }
 }
+/**
+ * 获取传感器数据
+ * @param {Object} params 
+ * @param {Function} cb 
+ */
+function getSensorData(params, cb) {
+  let { device_mac, start_date, end_date } = params;
+  MysqlHelper.query(`
+  SELECT
+    \`water_temperature\`,
+    \`ph\`,
+    \`o2\`,
+    \`create_time\`
+  FROM
+    \`fish\`.\`f_sensor_data\`
+  WHERE \`device_mac\`=? AND DATE(\`create_time\`)>=? AND DATE(\`create_time\`)<=?;
+  `, [device_mac, start_date, end_date], cb);
+}
+/**
+ * 获取用电量数据
+ * @param {Object} params 
+ * @param {Function} cb 
+ */
+function getKwhData(params, cb) {
+  let { device_mac, start_date, end_date } = params;
+  MysqlHelper.query(`
+  SELECT
+    \`io_name\`,
+    \`io_code\`,
+    \`io_type\`,
+    \`start_time\`,
+    \`end_time\`,
+    \`plan_duration\`,
+    \`actual_duration\`,
+    \`power_w\`,
+    \`kwh\`
+  FROM
+    \`fish\`.\`f_report\`
+  WHERE \`device_mac\`=?  AND power_w IS NOT NULL AND DATE(\`create_time\`)>=? AND DATE(\`create_time\`)<=?;
+  `, [device_mac, start_date, end_date], cb);
+}
+/**
+ * 获取投喂数据
+ * @param {Object} params 
+ * @param {Function} cb 
+ */
+function getFeedData(params, cb) {
+  let { device_mac, start_date, end_date } = params;
+  MysqlHelper.query(`
+  SELECT
+    \`io_name\`,
+    \`io_code\`,
+    \`io_type\`,
+    \`start_time\`,
+    \`end_time\`,
+    \`plan_duration\`,
+    \`actual_duration\`,
+    \`weight_per_second\`,  
+    \`actual_weight\`
+  FROM
+    \`fish\`.\`f_report\`
+  WHERE \`device_mac\`=? AND actual_weight IS NOT NULL AND DATE(\`create_time\`)>=? AND DATE(\`create_time\`)<=?;
+  `, [device_mac, start_date, end_date], cb);
+}
 
-module.exports = { fill, gatherSensorData, getPreview };
+/**
+ * 获取增氧记录数据
+ * @param {Object} params 
+ * @param {Function} cb 
+ */
+function getAerationData(params, cb) {
+  let { device_mac, start_date, end_date } = params;
+  MysqlHelper.query(`
+  SELECT
+    \`io_name\`,
+    \`io_code\`,
+    \`io_type\`,
+    \`start_time\`,
+    \`end_time\`,
+    \`plan_duration\`,
+    \`actual_duration\`
+  FROM
+    \`fish\`.\`f_report\`
+  WHERE \`device_mac\`=? AND io_type='aerator' AND DATE(\`create_time\`)>=? AND DATE(\`create_time\`)<=?;
+  `, [device_mac, start_date, end_date], cb);
+}
+module.exports = { fill, gatherSensorData, getPreview, getSensorData, getKwhData, getFeedData, getAerationData };
