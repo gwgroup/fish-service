@@ -157,4 +157,19 @@ function PrefixInteger(num, n, char = '0') {
   return (Array(n).join(char) + num).slice(-n);
 }
 
-module.exports = { parseTopic, BusinessError, Redis, MysqlHelper, generateValiCode, getClientIp, generateTokenCode, getSha256CodeWith20, generateUUID, generateID, downloadFileWithBase64, dateFormat, dateFormatWithUTC, PrefixInteger, SMS, Safe };
+/**
+ * 检查必填参数
+ * @param {Array} fields
+ * @param {Object} params 
+ * @returns {Boolean} 通过true，不过通过false
+ */
+function checkRequiredParams(fields, params) {
+  for (let i in fields) {
+    let field = fields[i];
+    if (params[field] === undefined) {
+      return false;
+    }
+  }
+  return true;
+}
+module.exports = { checkRequiredParams, parseTopic, BusinessError, Redis, MysqlHelper, generateValiCode, getClientIp, generateTokenCode, getSha256CodeWith20, generateUUID, generateID, downloadFileWithBase64, dateFormat, dateFormatWithUTC, PrefixInteger, SMS, Safe };

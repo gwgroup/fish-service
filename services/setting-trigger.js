@@ -18,9 +18,7 @@ function getAllTrigger(device_mac, cb) {
  * @param {Function} cb 
  */
 function addTrigger(device_mac, params, cb) {
-  let trigger = {
-    monitor, condition, condition_val, io_code, operaction, duration, enabled
-  } = params;
+  let trigger = params;
   trigger.id = util.generateUUID();
   adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.ADD_TRIGGER, trigger }, cb);
 }
@@ -63,18 +61,7 @@ function disableTrigger(device_mac, trigger_id, cb) {
  * @param {Function} cb 
  */
 function editTrigger(device_mac, params, cb) {
-  let trigger = {
-    id,
-    per,
-    day_of_month,
-    day_of_week,
-    hour,
-    minute,
-    second,
-    io_code,
-    duration,
-    enabled
-  } = params;
+  let trigger = params;
   adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.EDIT_TRIGGER, trigger }, cb);
 }
 

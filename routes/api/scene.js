@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var serviceScene = require('../../services/scene');
+var util = require('../../utils/index');
+const RESULT_CODE = require('../../config/index').codes;
 /**
  * 获取所有场景
  */
@@ -19,6 +21,9 @@ router.post('/get_all_scene', function (req, res, next) {
  * 添加场景
  */
 router.post('/add_scene', function (req, res, next) {
+  if (!util.checkRequiredParams(['device_mac', 'scene_name'], req.body)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
   serviceScene.addScene(req.token.user_id, req.body, (err) => {
     if (err) {
       next(err);
@@ -32,6 +37,9 @@ router.post('/add_scene', function (req, res, next) {
  * 删除场景
  */
 router.post('/remove_scene', function (req, res, next) {
+  if (!util.checkRequiredParams(['device_mac'], req.body)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
   serviceScene.removeScene(req.token.user_id, req.body.device_mac, (err) => {
     if (err) {
       next(err);
@@ -45,6 +53,9 @@ router.post('/remove_scene', function (req, res, next) {
  * 重命名场景
  */
 router.post('/rename_scene', function (req, res, next) {
+  if (!util.checkRequiredParams(['device_mac', 'scene_name'], req.body)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
   serviceScene.renameScene(req.token.user_id, req.body, (err) => {
     if (err) {
       next(err);

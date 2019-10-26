@@ -18,17 +18,7 @@ function getAllPlan(device_mac, cb) {
  * @param {Function} cb 
  */
 function addPlan(device_mac, params, cb) {
-  let plan = {
-    per,
-    day_of_month,
-    day_of_week,
-    hour,
-    minute,
-    second,
-    io_code,
-    duration,
-    enabled
-  } = params;
+  let plan = params;
   plan.id = util.generateUUID();
   adapter.safeRpc(device_mac, { sub_type: ACTION_CODES.ADD_PLAN, plan }, cb);
 }

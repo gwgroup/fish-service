@@ -1,11 +1,16 @@
 var express = require('express');
 var router = express.Router();
 var triggerSettingService = require('../../services/setting-trigger');
+var util = require('../../utils/index');
+const RESULT_CODE = require('../../config/index').codes;
 
 /**
  * 获取所有定时计划
  */
 router.post('/get_all_trigger', function (req, res, next) {
+  if (!util.checkRequiredParams(['device_mac'], req.body)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
   triggerSettingService.getAllTrigger(req.body.device_mac, (err, result) => {
     if (err) {
       next(err);
@@ -19,6 +24,12 @@ router.post('/get_all_trigger', function (req, res, next) {
  * 添加计划
  */
 router.post('/add_trigger', function (req, res, next) {
+  if (!req.body.device_mac || !req.body.trigger ||
+    !util.checkRequiredParams([
+      'monitor', 'condition', 'condition_val', 'io_code', 'operaction', 'duration', 'enabled'],
+      req.body.trigger)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
   triggerSettingService.addTrigger(req.body.device_mac, req.body.trigger, (err) => {
     if (err) {
       next(err);
@@ -32,6 +43,12 @@ router.post('/add_trigger', function (req, res, next) {
  * 修改触发任务
  */
 router.post('/edit_trigger', function (req, res, next) {
+  if (!req.body.device_mac || !req.body.trigger ||
+    !util.checkRequiredParams([
+      'id', 'monitor', 'condition', 'condition_val', 'io_code', 'operaction', 'duration', 'enabled'],
+      req.body.trigger)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
   triggerSettingService.editTrigger(req.body.device_mac, req.body.trigger, (err) => {
     if (err) {
       next(err);
@@ -45,6 +62,9 @@ router.post('/edit_trigger', function (req, res, next) {
  * 删除触发任务
  */
 router.post('/remove_trigger', function (req, res, next) {
+  if (!util.checkRequiredParams(['device_mac', 'id'], req.body)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
   triggerSettingService.removeTrigger(req.body.device_mac, req.body.id, (err) => {
     if (err) {
       next(err);
@@ -58,6 +78,9 @@ router.post('/remove_trigger', function (req, res, next) {
  * 启用触发任务
  */
 router.post('/enable_trigger', function (req, res, next) {
+  if (!util.checkRequiredParams(['device_mac', 'id'], req.body)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
   triggerSettingService.enableTrigger(req.body.device_mac, req.body.id, (err) => {
     if (err) {
       next(err);
@@ -70,6 +93,9 @@ router.post('/enable_trigger', function (req, res, next) {
  * 禁用触发任务
  */
 router.post('/disable_trigger', function (req, res, next) {
+  if (!util.checkRequiredParams(['device_mac', 'id'], req.body)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
   triggerSettingService.disableTrigger(req.body.device_mac, req.body.id, (err) => {
     if (err) {
       next(err);
