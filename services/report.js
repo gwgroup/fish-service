@@ -88,4 +88,115 @@ function gatherSensorData(fireTime) {
     });
 }
 
-module.exports = { fill, gatherSensorData };
+/**
+ * 获取预览报表数据
+ * @param {String} device_mac 
+ * @param {Function} cb 
+ */
+function getPreview(device_mac, cb) {
+  let initObject = {
+    today_water_temperature: { water_temperature_max: null, water_temperature_min: null, water_temperature_avg: null },
+    today_ph: { ph_max: null, ph_min: null, ph_avg: null },
+    today_o2: { o2_max: null, o2_min: null, o2_avg: null },
+    today_kwh: { kwh_sum: null },
+    today_feeder_weight: { actual_weight_sum: null },
+    today_aeration_duration: { actual_duration_sum: null },
+    past7day_water_temperature: { water_temperature_max: null, water_temperature_min: null, water_temperature_avg: null },
+    past7day_ph: { ph_max: null, ph_min: null, ph_avg: null },
+    past7day_o2: { o2_max: null, o2_min: null, o2_avg: null },
+    past7day_kwh: { kwh_sum: null },
+    past7day_feeder_weight: { actual_weight_sum: null },
+    past7day_aeration_duration: { actual_duration_sum: null }
+  };
+  MysqlHelper.query(`
+# 传感器指标
+#今天
+SELECT 
+  MAX(water_temperature) water_temperature_max,
+  MIN(water_temperature) water_temperature_min,
+  TRUNCATE(AVG(water_temperature),1) water_temperature_avg,
+  MAX(ph) ph_max,
+  MIN(ph) ph_min,
+  TRUNCATE(AVG(ph),1) ph_avg,
+  MAX(o2) o2_max,
+  MIN(o2) o2_min,
+  TRUNCATE(AVG(o2),1) o2_avg
+FROM \`fish\`.\`f_sensor_data\` 
+WHERE device_mac=? AND TO_DAYS(NOW()) = TO_DAYS(\`create_time\`);
+#过去7天
+SELECT 
+  MAX(water_temperature) water_temperature_max,
+  MIN(water_temperature) water_temperature_min,
+  TRUNCATE(AVG(water_temperature),1) water_temperature_avg,
+  MAX(ph) ph_max,
+  MIN(ph) ph_min,
+  TRUNCATE(AVG(ph),1) ph_avg,
+  MAX(o2) o2_max,
+  MIN(o2) o2_min,
+  TRUNCATE(AVG(o2),1) o2_avg
+FROM \`fish\`.\`f_sensor_data\` 
+WHERE device_mac=? AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <=DATE(\`create_time\`) AND DATE(\`create_time\`)<=DATE(CURDATE()-1);
+#今日用电量
+SELECT
+  SUM(\`kwh\`) kwh_sum
+FROM \`fish\`.\`f_report\`
+WHERE device_mac=? AND TO_DAYS(NOW()) = TO_DAYS(\`end_time\`);
+#过去7天用电量
+SELECT
+  SUM(\`kwh\`) kwh_sum
+FROM \`fish\`.\`f_report\`
+WHERE device_mac=?  AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <=DATE(\`end_time\`) AND DATE(\`end_time\`)<=DATE(CURDATE()-1);
+#今日投喂量
+SELECT
+  FLOOR(SUM(\`actual_weight\`)) actual_weight_sum
+FROM \`fish\`.\`f_report\`
+WHERE device_mac=? AND \`io_type\`='feeder' AND TO_DAYS(NOW()) = TO_DAYS(\`end_time\`);
+#过去7天投喂量
+SELECT
+  FLOOR(SUM(\`actual_weight\`)) actual_weight_sum
+FROM \`fish\`.\`f_report\`
+WHERE device_mac=? AND \`io_type\`='feeder' AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <=DATE(\`end_time\`) AND DATE(\`end_time\`)<=DATE(CURDATE()-1);
+#今日增氧时长
+SELECT
+  FLOOR(SUM(\`actual_duration\`)/1000) actual_duration_sum
+FROM \`fish\`.\`f_report\`
+WHERE device_mac=? AND \`io_type\`='aerator' AND TO_DAYS(NOW()) = TO_DAYS(\`end_time\`);
+#过去7天增氧时长
+SELECT
+  FLOOR(SUM(\`actual_duration\`)/1000) actual_duration_sum
+FROM \`fish\`.\`f_report\`
+WHERE device_mac=? AND \`io_type\`='aerator' AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) <=DATE(\`end_time\`) AND DATE(\`end_time\`)<=DATE(CURDATE()-1);
+`, [device_mac, device_mac, device_mac, device_mac, device_mac, device_mac, device_mac, device_mac], function (err, results) {
+    if (err) {
+      return cb(err);
+    }
+    __fillPreviewData(initObject.today_water_temperature, results[0][0]);
+    __fillPreviewData(initObject.today_ph, results[0][0]);
+    __fillPreviewData(initObject.today_o2, results[0][0]);
+    __fillPreviewData(initObject.today_kwh, results[2][0]);
+    __fillPreviewData(initObject.today_feeder_weight, results[4][0]);
+    __fillPreviewData(initObject.today_aeration_duration, results[6][0]);
+    __fillPreviewData(initObject.past7day_water_temperature, results[1][0]);
+    __fillPreviewData(initObject.past7day_ph, results[1][0]);
+    __fillPreviewData(initObject.past7day_o2, results[1][0]);
+    __fillPreviewData(initObject.past7day_kwh, results[3][0]);
+    __fillPreviewData(initObject.past7day_feeder_weight, results[5][0]);
+    __fillPreviewData(initObject.past7day_aeration_duration, results7[0]);
+    return cb(undefined, initObject);
+  });
+}
+/**
+ * 填充到基础对象数据
+ * @param {Object} baseObj 
+ * @param {Object} data 
+ */
+function __fillPreviewData(baseObj, data) {
+  if (!data) {
+    return;
+  }
+  for (let key in baseObj) {
+    baseObj[key] = data[key];
+  }
+}
+
+module.exports = { fill, gatherSensorData, getPreview };

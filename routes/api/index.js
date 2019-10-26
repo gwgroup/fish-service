@@ -12,7 +12,8 @@ var tokenService = require('../../services/token'),
   planRouter = require('./plan'),
   triggerRouter = require('./trigger'),
   sceneRouter = require('./scene'),
-  camsRouter = require('./cams');
+  camsRouter = require('./cams'),
+  reportRouter = require('./report');
 
 router.use(function (req, res, next) {
   if (openUrls.indexOf(req.path) != -1) {
@@ -51,6 +52,7 @@ router.use('/plan', planRouter);
 router.use('/trigger', triggerRouter);
 router.use('/scene', sceneRouter);
 router.use('/cams', camsRouter);
+router.use('/report', reportRouter);
 
 router.use(function (req, res, next) {
   res.status(404).send(JSON.stringify({ message: HTTP_RESULT_CODES.apiNotFound[1], code: HTTP_RESULT_CODES.apiNotFound[0] }));
