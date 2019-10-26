@@ -181,7 +181,7 @@ WHERE device_mac=? AND \`io_type\`='aerator' AND DATE_SUB(CURDATE(), INTERVAL 7 
     __fillPreviewData(initObject.past7day_o2, results[1][0]);
     __fillPreviewData(initObject.past7day_kwh, results[3][0]);
     __fillPreviewData(initObject.past7day_feeder_weight, results[5][0]);
-    __fillPreviewData(initObject.past7day_aeration_duration, results7[0]);
+    __fillPreviewData(initObject.past7day_aeration_duration, results[7][0]);
     return cb(undefined, initObject);
   });
 }
