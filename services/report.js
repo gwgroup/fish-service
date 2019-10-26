@@ -182,6 +182,10 @@ WHERE device_mac=? AND \`io_type\`='aerator' AND DATE_SUB(CURDATE(), INTERVAL 7 
     __fillPreviewData(initObject.past7day_kwh, results[3][0]);
     __fillPreviewData(initObject.past7day_feeder_weight, results[5][0]);
     __fillPreviewData(initObject.past7day_aeration_duration, results[7][0]);
+    let obj = adapter.getDeviceStatus(device_mac);
+    initObject.today_water_temperature.current = obj.status.water_temperature;
+    initObject.today_ph.current = obj.status.ph;
+    initObject.today_o2.current = obj.status.o2;
     return cb(undefined, initObject);
   });
 }
