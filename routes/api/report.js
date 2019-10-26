@@ -1,6 +1,8 @@
 var express = require('express');
 var router = express.Router();
 var reportService = require('../../services/report');
+var util = require('../../utils/index');
+const RESULT_CODE = require('../../config/index').codes;
 /**
  *获取报表总览数据
  */
