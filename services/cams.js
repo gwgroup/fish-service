@@ -81,7 +81,7 @@ function switchProfile(params, cb) {
     if (result.error) {
       return cb(new util.BusinessError(result.error.code, result.error.message));
     }
-    cb();
+    cb(undefined, result);
   }, 8000);
 }
 
