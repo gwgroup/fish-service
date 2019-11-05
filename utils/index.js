@@ -172,4 +172,28 @@ function checkRequiredParams(fields, params) {
   }
   return true;
 }
-module.exports = { checkRequiredParams, parseTopic, BusinessError, Redis, MysqlHelper, generateValiCode, getClientIp, generateTokenCode, getSha256CodeWith20, generateUUID, generateID, downloadFileWithBase64, dateFormat, dateFormatWithUTC, PrefixInteger, SMS, Safe };
+/**
+ * 设备状态数据io状态转换为数组
+ * @param {Object} params 
+ */
+function statusDataChangeArray(params) {
+  if (!params) { return params; }
+  let orgStatus = params.status,
+    result = { online: params.online, water_temperature: orgStatus.water_temperature, ph: orgStatus.ph, o2: orgStatus.o2, status: [] },
+    status = result.status;
+  for (const key in orgStatus) {
+    if (orgStatus.hasOwnProperty(key)) {
+      let element = orgStatus[key];
+      if (typeof element === 'object') {
+        status.push({
+          code: key,
+          opened: element.opened,
+          start_time: element.start_time,
+          duration: element.duration
+        });
+      }
+    }
+  }
+  return result;
+}
+module.exports = { checkRequiredParams, parseTopic, BusinessError, Redis, MysqlHelper, generateValiCode, getClientIp, generateTokenCode, getSha256CodeWith20, generateUUID, generateID, downloadFileWithBase64, dateFormat, dateFormatWithUTC, PrefixInteger, SMS, Safe, statusDataChangeArray };

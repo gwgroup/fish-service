@@ -151,7 +151,7 @@ function getAllScene(userId, cb) {
  */
 function _noticeNewDeviceStatus(userId, device_mac) {
   //用户添加场景,触发发送设备状态到ws
-  let data = { type: 1, device_mac, data: adapter.getDeviceStatus(device_mac) };
+  let data = { type: 1, device_mac, data: util.statusDataChangeArray(adapter.getDeviceStatus(device_mac)) };
   adapter.ws.sendDataWithUsers([userId], data);
 }
 
@@ -160,7 +160,7 @@ function _noticeNewDeviceStatus(userId, device_mac) {
  */
 adapter.on('device_status_change', function (device_mac, data) {
   let uids = __getUseridsWithDeviceMac(device_mac);
-  adapter.ws.sendDataWithUsers(uids, { type: 1, device_mac, data });
+  adapter.ws.sendDataWithUsers(uids, { type: 1, device_mac, data: util.statusDataChangeArray(data) });
 });
 
 /**
@@ -170,7 +170,7 @@ adapter.ws.on('connect', (con) => {
   let userid = con.userId;
   let macs = getDeviceMacs(userid);
   macs.forEach((device_mac) => {
-    adapter.ws.sendData(con, { type: 1, device_mac, data: adapter.getDeviceStatus(device_mac) });
+    adapter.ws.sendData(con, { type: 1, device_mac, data: util.statusDataChangeArray(adapter.getDeviceStatus(device_mac)) });
   });
 });
 module.exports = { getDeviceMacs, addScene, removeScene, getAllScene, renameScene };

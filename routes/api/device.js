@@ -144,7 +144,7 @@ router.post('/get_device_status', function (req, res) {
     return next(util.BusinessError.create(RESULT_CODE.paramsError));
   }
   let device_mac = req.body.device_mac;
-  res.send(JSON.stringify({ code: 1000, data: adapter.getDeviceStatus(device_mac) }));
+  res.send(JSON.stringify({ code: 1000, data: util.statusDataChangeArray(adapter.getDeviceStatus(device_mac)) }));
 });
 
 module.exports = router;
