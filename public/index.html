@@ -76,8 +76,8 @@
         ws.onerror = function(err) {
           console.error(err);
         };
-        ws.onclose = function() {
-          console.log("ws", "closed");
+        ws.onclose = function(ev) {
+          console.log("ws", "closed", ev.code, ev.reason, ev.wasClean);
         };
       });
     </script>
