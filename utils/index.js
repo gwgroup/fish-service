@@ -177,6 +177,7 @@ function checkRequiredParams(fields, params) {
  * @param {Object} params 
  */
 function statusDataChangeArray(params) {
+  console.log('statusDataChangeArray', params);
   if (!params) { return params; }
   let orgStatus = params.status,
     result = { online: params.online, water_temperature: orgStatus.water_temperature, ph: orgStatus.ph, o2: orgStatus.o2, status: [] },
