@@ -10,7 +10,7 @@ var easyDarwinService = require('../../services/easy-darwin');
 const SCREENSHOT_URL = require('../../config/index').openUrls.screenshotUrl;
 //上报设备信息
 router.get('/get_info', function (req, res, next) {
-  let client_id = req.query("client_id");
+  let client_id = req.query["client_id"];
   let ip = util.getClientIp(req);
   adapter.getDeviceStatus(client_id).ip = ip;
   res.send(JSON.stringify({ code: 1000, data: { local_ip: ip, server_timestamp: Date.now() } }));
