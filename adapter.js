@@ -34,7 +34,7 @@ mqtt.on('status', function (topic, status) {
  */
 function __changeStatus(clientId, status, online) {
   if (!deviceStatus.has(clientId)) {
-    deviceStatus.set(clientId, { online: 0, status: { water_temperature: null, o2: null, ph: null } });
+    deviceStatus.set(clientId, { online: 0, ip: null, status: { water_temperature: null, o2: null, ph: null } });
   }
   let obj = deviceStatus.get(clientId);
   if (status) {
