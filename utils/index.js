@@ -5,7 +5,8 @@ var BusinessError = require('./business-error'),
   Redis = require('./redis'),
   MysqlHelper = require('./mysql-helper'),
   SMS = require('./sms'),
-  Safe = require('./safe');
+  Safe = require('./safe'),
+  weather = require('./weather');
 
 /**
 * 解析主题
@@ -177,7 +178,7 @@ function checkRequiredParams(fields, params) {
  * @param {Object} params 
  */
 function statusDataChangeArray(params) {
- // console.log('statusDataChangeArray', params);
+  // console.log('statusDataChangeArray', params);
   if (!params) { return params; }
   let orgStatus = params.status,
     result = { online: params.online, water_temperature: orgStatus.water_temperature, ph: orgStatus.ph, o2: orgStatus.o2, status: [] },
@@ -197,4 +198,4 @@ function statusDataChangeArray(params) {
   }
   return result;
 }
-module.exports = { checkRequiredParams, parseTopic, BusinessError, Redis, MysqlHelper, generateValiCode, getClientIp, generateTokenCode, getSha256CodeWith20, generateUUID, generateID, downloadFileWithBase64, dateFormat, dateFormatWithUTC, PrefixInteger, SMS, Safe, statusDataChangeArray };
+module.exports = { checkRequiredParams, parseTopic, BusinessError, Redis, MysqlHelper, generateValiCode, getClientIp, generateTokenCode, getSha256CodeWith20, generateUUID, generateID, downloadFileWithBase64, dateFormat, dateFormatWithUTC, PrefixInteger, SMS, Safe, statusDataChangeArray, weather };

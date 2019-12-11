@@ -139,12 +139,35 @@ router.post('/power', function (req, res, next) {
 /**
  * 获取设备状态数据
  */
-router.post('/get_device_status', function (req, res) {
+router.post('/get_device_status', function (req, res, next) {
   if (!util.checkRequiredParams(['device_mac'], req.body)) {
     return next(util.BusinessError.create(RESULT_CODE.paramsError));
   }
   let device_mac = req.body.device_mac;
   res.send(JSON.stringify({ code: 1000, data: util.statusDataChangeArray(adapter.getDeviceStatus(device_mac)) }));
+});
+
+/**
+ * 获取天气
+ */
+router.post('/get_weather', function (req, res, next) {
+  if (!util.checkRequiredParams(['device_mac'], req.body)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
+  let device_mac = req.body.device_mac;
+  let ip = adapter.getDeviceStatus(device_mac).ip;
+  if (ip) {
+    util.weather.getWeatherWithIp(ip, (err, data) => {
+      if (err || data === null) {
+        return next(util.BusinessError.create(RESULT_CODE.weatherError));
+      }
+      res.send(JSON.stringify({
+        code: 1000, data: data
+      }));
+    });
+  } else {
+    return next(util.BusinessError.create(RESULT_CODE.weatherError));
+  }
 });
 
 module.exports = router;
