@@ -6,7 +6,7 @@ function getWeatherWithIp(ip, cb) {
     (err, response, body) => {
       if (err) { return cb(err); }
       if (body && body.data) {
-        cb(undefined, data);
+        cb(undefined, body);
       } else {
         cb(undefined, null);
       }
