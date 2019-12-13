@@ -31,7 +31,7 @@ function play(params, cb) {
       return cb(new util.BusinessError(result.error.code, result.error.message));
     }
     cb();
-  }, 8000);
+  }, 15000);
 }
 
 /**
