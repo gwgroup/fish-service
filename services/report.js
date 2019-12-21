@@ -218,7 +218,7 @@ function getSensorData(params, cb) {
       \`water_temperature\`,
       \`ph\`,
       \`o2\`,
-      DATE(\`create_time\`) \`date\`
+      DATE_FORMAT(\`create_time\`,'%Y-%m-%d') \`date\`
     FROM
       \`fish\`.\`f_sensor_data\`
     WHERE device_mac=? AND YEAR(create_time)=? AND MONTH(create_time)=? ) a
@@ -257,7 +257,7 @@ function getKwhData(params, cb) {
   MysqlHelper.query(`
   SELECT a.date,TRUNCATE(SUM(a.kwh)*1000,2) sum_wh FROM (
       SELECT
-          DATE(\`end_time\`) \`date\`,
+          DATE_FORMAT(\`end_time\`,'%Y-%m-%d') \`date\`,
           \`kwh\`
         FROM
           \`fish\`.\`f_report\`
@@ -314,7 +314,7 @@ function getFeedData(params, cb) {
   MysqlHelper.query(`
   SELECT a.date,TRUNCATE(SUM(a.actual_weight),2) sum_actual_weight FROM (
     SELECT
-        DATE(\`end_time\`) \`date\`,
+        DATE_FORMAT(\`end_time\`,'%Y-%m-%d') \`date\`,
         \`actual_duration\`,
         \`actual_weight\`
       FROM
@@ -361,7 +361,7 @@ function getAerationData(params, cb) {
   MysqlHelper.query(`
   SELECT a.date,TRUNCATE(SUM(a.actual_duration)/1000/60,0) sum_actual_duration FROM (
     SELECT
-        DATE(\`end_time\`) \`date\`,
+        DATE_FORMAT(\`end_time\`,'%Y-%m-%d') \`date\`,
         \`actual_duration\`
       FROM
         \`fish\`.\`f_report\`
