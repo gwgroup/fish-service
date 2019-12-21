@@ -202,13 +202,38 @@ function __fillPreviewData(baseObj, data) {
     baseObj[key] = data[key];
   }
 }
+
 /**
- * 获取传感器数据
+ * 获取传感器数据（按月）
  * @param {Object} params 
  * @param {Function} cb 
  */
 function getSensorData(params, cb) {
-  let { device_mac, start_date, end_date } = params;
+  let { device_mac, month_of_year } = params,
+    year = parseInt(month_of_year.split('-')[0], 10),
+    month = parseInt(month_of_year.split('-')[1], 10);
+  MysqlHelper.query(`
+  SELECT a.date,MAX(a.water_temperature) max_water_temperature ,MIN(a.water_temperature) min_water_temperature, TRUNCATE(AVG(a.water_temperature),1) avg_water_temperature,MAX(a.ph) max_ph ,MIN(a.ph) min_ph, TRUNCATE(AVG(a.ph),1) avg_ph,MAX(a.o2) max_o2 ,MIN(a.o2) min_o2, TRUNCATE(AVG(a.o2),1) avg_o2 FROM (
+    SELECT
+      \`water_temperature\`,
+      \`ph\`,
+      \`o2\`,
+      DATE(\`create_time\`) \`date\`
+    FROM
+      \`fish\`.\`f_sensor_data\`
+    WHERE device_mac=? AND YEAR(create_time)=? AND MONTH(create_time)=? ) a
+  GROUP BY a.date
+  ORDER BY a.date;
+  `, [device_mac, year, month], cb);
+}
+
+/**
+ * 获取传感器数据(按日)
+ * @param {Object} params 
+ * @param {Function} cb 
+ */
+function getSensorDataDetail(params, cb) {
+  let { device_mac, date } = params;
   MysqlHelper.query(`
   SELECT
     \`water_temperature\`,
@@ -217,16 +242,49 @@ function getSensorData(params, cb) {
     \`create_time\`
   FROM
     \`fish\`.\`f_sensor_data\`
-  WHERE \`device_mac\`=? AND DATE(\`create_time\`)>=? AND DATE(\`create_time\`)<=?;
-  `, [device_mac, start_date, end_date], cb);
+  WHERE \`device_mac\`=? AND DATE(\`create_time\`)=?;
+  `, [device_mac, date], cb);
 }
 /**
- * 获取用电量数据
+ * 获取用电量数据(按年月)
  * @param {Object} params 
  * @param {Function} cb 
  */
 function getKwhData(params, cb) {
-  let { device_mac, start_date, end_date } = params;
+  let { device_mac, month_of_year } = params,
+    year = parseInt(month_of_year.split('-')[0], 10),
+    month = parseInt(month_of_year.split('-')[1], 10);
+  MysqlHelper.query(`
+  SELECT a.date,TRUNCATE(SUM(a.kwh)*1000,2) sum_wh FROM (
+      SELECT
+          DATE(\`end_time\`) \`date\`,
+          \`kwh\`
+        FROM
+          \`fish\`.\`f_report\`
+        WHERE \`device_mac\`=? AND power_w IS NOT NULL AND YEAR(end_time)=? AND MONTH(end_time)=?) a
+    GROUP BY a.date
+    ORDER BY a.date;
+  SELECT a.io_name,a.io_code,a.io_type,TRUNCATE(SUM(a.kwh*1000),2) sum_wh FROM (
+      SELECT
+        \`io_name\`,
+        \`io_code\`,
+        \`io_type\`,
+        \`actual_duration\`,
+        \`kwh\`
+      FROM
+        \`fish\`.\`f_report\`
+      WHERE \`device_mac\`=? AND power_w IS NOT NULL AND YEAR(end_time)=? AND MONTH(end_time)=?) a
+  GROUP BY a.io_name,a.io_code,a.io_type;
+  `, [device_mac, year, month, device_mac, year, month], cb);
+}
+
+/**
+ * 获取用电量数据（按日）
+ * @param {Object} params
+ * @param {Function} cb
+ */
+function getKwhDataDetail(params, cb) {
+  let { device_mac, date } = params;
   MysqlHelper.query(`
   SELECT
     \`io_name\`,
@@ -240,16 +298,40 @@ function getKwhData(params, cb) {
     \`kwh\`
   FROM
     \`fish\`.\`f_report\`
-  WHERE \`device_mac\`=?  AND power_w IS NOT NULL AND DATE(\`end_time\`)>=? AND DATE(\`end_time\`)<=?;
-  `, [device_mac, start_date, end_date], cb);
+  WHERE \`device_mac\`=?  AND power_w IS NOT NULL AND DATE(\`end_time\`)=?;
+  `, [device_mac, date], cb);
 }
+
 /**
- * 获取投喂数据
+ * 获取投喂数据(按年月)
  * @param {Object} params 
  * @param {Function} cb 
  */
 function getFeedData(params, cb) {
-  let { device_mac, start_date, end_date } = params;
+  let { device_mac, month_of_year } = params,
+    year = parseInt(month_of_year.split('-')[0], 10),
+    month = parseInt(month_of_year.split('-')[1], 10);
+  MysqlHelper.query(`
+  SELECT a.date,TRUNCATE(SUM(a.actual_weight),2) sum_actual_weight FROM (
+    SELECT
+        DATE(\`end_time\`) \`date\`,
+        \`actual_duration\`,
+        \`actual_weight\`
+      FROM
+        \`fish\`.\`f_report\`
+      WHERE \`device_mac\`=? AND actual_weight IS NOT NULL AND YEAR(end_time)=? AND MONTH(end_time)=?) a
+  GROUP BY a.date
+  ORDER BY a.date;
+  `, [device_mac, year, month], cb);
+}
+
+/**
+ * 获取投喂数据详情(按日)
+ * @param {Object} params 
+ * @param {Function} cb 
+ */
+function getFeedDataDetail(params, cb) {
+  let { device_mac, date } = params;
   MysqlHelper.query(`
   SELECT
     \`io_name\`,
@@ -259,21 +341,43 @@ function getFeedData(params, cb) {
     \`end_time\`,
     \`plan_duration\`,
     \`actual_duration\`,
-    \`weight_per_second\`,  
+    \`weight_per_second\`,
     \`actual_weight\`
   FROM
     \`fish\`.\`f_report\`
-  WHERE \`device_mac\`=? AND actual_weight IS NOT NULL AND DATE(\`end_time\`)>=? AND DATE(\`end_time\`)<=?;
-  `, [device_mac, start_date, end_date], cb);
+  WHERE \`device_mac\`=? AND actual_weight IS NOT NULL AND DATE(\`end_time\`)=?;
+  `, [device_mac, date], cb);
 }
 
 /**
- * 获取增氧记录数据
+ * 获取增氧记录数据(按年月)
  * @param {Object} params 
  * @param {Function} cb 
  */
 function getAerationData(params, cb) {
-  let { device_mac, start_date, end_date } = params;
+  let { device_mac, month_of_year } = params,
+    year = parseInt(month_of_year.split('-')[0], 10),
+    month = parseInt(month_of_year.split('-')[1], 10);
+  MysqlHelper.query(`
+  SELECT a.date,TRUNCATE(SUM(a.actual_duration)/1000/60,0) sum_actual_duration FROM (
+    SELECT
+        DATE(\`end_time\`) \`date\`,
+        \`actual_duration\`
+      FROM
+        \`fish\`.\`f_report\`
+      WHERE \`device_mac\`=? AND io_type='aerator' AND YEAR(end_time)=? AND MONTH(end_time)=?) a
+  GROUP BY a.date
+  ORDER BY a.date;
+  `, [device_mac, year, month], cb);
+}
+
+/**
+ * 获取增氧记录数据详情（按日）
+ * @param {Object} params 
+ * @param {Function} cb 
+ */
+function getAerationDataDetail(params, cb) {
+  let { device_mac, date } = params;
   MysqlHelper.query(`
   SELECT
     \`io_name\`,
@@ -285,10 +389,9 @@ function getAerationData(params, cb) {
     \`actual_duration\`
   FROM
     \`fish\`.\`f_report\`
-  WHERE \`device_mac\`=? AND io_type='aerator' AND DATE(\`end_time\`)>=? AND DATE(\`end_time\`)<=?;
-  `, [device_mac, start_date, end_date], cb);
+  WHERE \`device_mac\`=? AND io_type='aerator' AND DATE(\`end_time\`)=?;
+  `, [device_mac, date], cb);
 }
-
 /**
  * 所有事件
  * @param {Object} params 
@@ -333,4 +436,4 @@ function getEvents(params, cb) {
       cb(undefined, { total: results[0][0]["total_count"], rows: results[1] });
     });
 }
-module.exports = { fill, gatherSensorData, getPreview, getSensorData, getKwhData, getFeedData, getAerationData, getEvents };
+module.exports = { fill, gatherSensorData, getPreview, getSensorData, getSensorDataDetail, getKwhData, getKwhDataDetail, getFeedData, getFeedDataDetail, getAerationData, getAerationDataDetail, getEvents };
