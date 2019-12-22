@@ -7,6 +7,7 @@ var path = require('path');
 var fishScreenshot = multer({ dest: path.join(__dirname, '../../../fish-screenshot/') });
 var adapter = require('../../adapter');
 var easyDarwinService = require('../../services/easy-darwin');
+var firmwareService = require('../../services/firmware');
 const SCREENSHOT_URL = require('../../config/index').openUrls.screenshotUrl;
 //上报设备信息
 router.get('/get_info', function (req, res, next) {
@@ -31,5 +32,16 @@ router.get('/ed_stream_can_be_release', function (req, res, next) {
 router.post('/file_upload', fishScreenshot.single('screenshot'), function (req, res, next) {
   fs.renameSync(req.file.path, path.join(req.file.destination, req.file.originalname));
   res.send(JSON.stringify({ code: 1000, data: `${SCREENSHOT_URL}/${req.file.originalname}` }));
+});
+
+//检查固件更新包
+router.post('/firmware_check', function (req, res, next) {
+  let { mac, version } = req.query;
+  firmwareService.check(mac, version, (err, result) => {
+    if (err) {
+      return next(err);
+    }
+    res.send(JSON.stringify({ code: 1000, data: result }));
+  });
 });
 module.exports = router;

@@ -1,7 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 let firmwareDir = path.join(__dirname, '../../fish-firmware');
-let downloadBaseUrl = 'https://fish.ypcxpt.com/firmware/';
+let downloadBaseUrl = require('../config/index').openUrls.firmwareUrl;
 /**
  * 查询新的固件
  * @param {String} mac 
