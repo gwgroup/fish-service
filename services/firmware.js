@@ -1,7 +1,9 @@
-var fs = require('fs');
-var path = require('path');
-let firmwareDir = path.join(__dirname, '../../fish-firmware');
-let downloadBaseUrl = require('../config/index').openUrls.firmwareUrl;
+var fs = require('fs'),
+  path = require('path'),
+  firmwareDir = path.join(__dirname, '../../fish-firmware'),
+  downloadBaseUrl = require('../config/index').openUrls.firmwareUrl,
+  adapter = require('../adapter'),
+  ACTION_CODES = Object.freeze({ GET_VERSION_INFO: 9101, UPGRADE: 9102 });
 /**
  * 查询新的固件
  * @param {String} mac 
@@ -28,7 +30,26 @@ function check(mac, version, cb) {
     console.log('firmware check', mac, version, lastVersion);
   });
 }
-module.exports = { check };
+
+/**
+ * 获取设备版本信息
+ * @param {String} mac 
+ * @param {Function} cb 
+ */
+function getDeviceVersionInfo(mac, cb) {
+  adapter.safeRpc(mac, { sub_type: ACTION_CODES.GET_VERSION_INFO }, cb);
+}
+
+/**
+ * 固件更新
+ * @param {String} mac 
+ * @param {Function} cb 
+ */
+function upgrade(mac, cb) {
+  adapter.safeRpc(mac, { sub_type: ACTION_CODES.UPGRADE }, cb, 50000);
+}
+
+module.exports = { check, getDeviceVersionInfo, upgrade };
 // check('77', '0.0.1', (err, result) => {
 //   console.log(err, result);
 // });

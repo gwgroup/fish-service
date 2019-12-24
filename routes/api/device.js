@@ -4,6 +4,7 @@ var service = require('../../services/device');
 var ioSettingService = require('../../services/setting-io');
 var adapter = require('../../adapter');
 var util = require('../../utils/index');
+var firmware = require('../../services/firmware');
 const RESULT_CODE = require('../../config/index').codes;
 //const CLIENT_ID = "b827eb540371";//0000000055ed
 
@@ -168,6 +169,40 @@ router.post('/get_weather', function (req, res, next) {
   } else {
     return next(util.BusinessError.create(RESULT_CODE.weatherError));
   }
+});
+
+/**
+ * 获取固件版本信息
+ */
+router.post('/firmware_version_info', function (req, res, next) {
+  if (!util.checkRequiredParams(['device_mac'], req.body)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
+  let device_mac = req.body.device_mac;
+  firmware.getDeviceVersionInfo(device_mac, (err, result) => {
+    if (err) {
+      return next(err);
+    } else {
+      res.send(JSON.stringify({ code: 1000, data: result }));
+    }
+  });
+});
+
+/**
+ * 固件升级
+ */
+router.post('/firmware_upgrade', function (req, res, next) {
+  if (!util.checkRequiredParams(['device_mac'], req.body)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
+  let device_mac = req.body.device_mac;
+  firmware.upgrade(device_mac, (err) => {
+    if (err) {
+      return next(err);
+    } else {
+      res.send(JSON.stringify({ code: 1000 }));
+    }
+  });
 });
 
 module.exports = router;
