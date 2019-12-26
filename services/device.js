@@ -3,18 +3,18 @@ var BusinessError = require('../utils/business-error'),
 const RESULT_CODES = require('../config').codes;
 let ACTION_CODES = Object.freeze({ EXEC: 3004, OPEN: 4001, CLOSE: 4002 });
 
-/**
- * 更新重启
- * @param {String} clientId 
- */
-function updateReset(clientId) {
-  adapter.safeRpc(clientId, { sub_type: ACTION_CODES.EXEC, "cmd": "/home/work/script/fish-client.autofast.update.sh" }, (err, result) => {
-    if (err) {
-      return console.error(err);
-    }
-    console.log(result);
-  });
-}
+// /**
+//  * 更新重启
+//  * @param {String} clientId 
+//  */
+// function updateReset(clientId) {
+//   adapter.safeRpc(clientId, { sub_type: ACTION_CODES.EXEC, "cmd": "/home/work/script/fish-client.autofast.update.sh" }, (err, result) => {
+//     if (err) {
+//       return console.error(err);
+//     }
+//     console.log(result);
+//   });
+// }
 
 /**
  * 打开IO
@@ -43,4 +43,4 @@ function close(clientId, ioCode, cb) {
   adapter.safeRpc(clientId, { io_code: ioCode, sub_type: ACTION_CODES.CLOSE }, cb);
 }
 
-module.exports = { open, close, updateReset };
+module.exports = { open, close };

@@ -58,6 +58,62 @@ router.post('/get_io_info', function (req, res, next) {
 });
 
 /**
+ * 获取io信息
+ */
+router.post('/get_io_info', function (req, res, next) {
+  if (!util.checkRequiredParams(['device_mac'], req.body)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
+  ioSettingService.getIoInfo(req.body, (err, result) => {
+    if (err) {
+      next(err);
+    } else {
+      res.send(JSON.stringify({ code: 1000, data: result }));
+    }
+  });
+});
+
+/**
+ * 添加IO
+ */
+router.post('/add_io', function (req, res, next) {
+  if (!req.body.device_mac || !req.body.io ||
+    !util.checkRequiredParams([
+      'code',
+      'type',
+      'name',
+      'pin',
+      'weight_per_second',
+      'enabled'],
+      req.body.io)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
+  ioSettingService.addIo(req.body.device_mac, req.body.io, (err) => {
+    if (err) {
+      next(err);
+    } else {
+      res.send(JSON.stringify({ code: 1000 }));
+    }
+  });
+});
+
+/**
+ * 删除IO
+ */
+router.post('/remove_io', function (req, res, next) {
+  if (!util.checkRequiredParams(['device_mac', 'code'], req.body)) {
+    return next(util.BusinessError.create(RESULT_CODE.paramsError));
+  }
+  ioSettingService.removeIo(req.body.device_mac, req.body.code, (err) => {
+    if (err) {
+      next(err);
+    } else {
+      res.send(JSON.stringify({ code: 1000 }));
+    }
+  });
+});
+
+/**
  * 重命名IO
  */
 router.post('/io_rename', function (req, res, next) {
