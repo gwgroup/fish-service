@@ -275,7 +275,12 @@ function getKwhData(params, cb) {
         \`fish\`.\`f_report\`
       WHERE \`device_mac\`=? AND power_w IS NOT NULL AND YEAR(end_time)=? AND MONTH(end_time)=?) a
   GROUP BY a.io_name,a.io_code,a.io_type;
-  `, [device_mac, year, month, device_mac, year, month], cb);
+  `, [device_mac, year, month, device_mac, year, month], (err, result) => {
+    if (err) {
+      return cb(err);
+    }
+    cb(undefined, { list: result[0], data_by_device: result[1] });
+  });
 }
 
 /**
