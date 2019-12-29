@@ -1,0 +1,106 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0, shrink-to-fit=no, viewport-fit=cover"
+    />
+    <title>控制中心</title>
+    <script src="javascripts/jquery-3.4.1.min.js"></script>
+    <script>
+      $(function() {
+        $("#open_btn").click(function() {
+          $.ajax({
+            method: "POST",
+            url: "api/device/open",
+            cache: false,
+            dataType: "json",
+            data: JSON.stringify({
+              client_id: $("#client").val(),
+              io_code: $("#io_code").val(),
+              duration: parseInt($("#duration").val())
+            }),
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              authorization: "b5fff1337ab14429b7880d5678c94651",
+              "Content-Type": "application/json"
+            },
+            success: function(data) {
+              alert(data.message);
+            }
+          });
+        });
+        $("#close_btn").click(function() {
+          $.ajax({
+            method: "POST",
+            url: "api/device/close",
+            cache: false,
+            dataType: "json",
+            data: JSON.stringify({
+              client_id: $("#client").val(),
+              io_code: $("#io_code").val()
+            }),
+            headers: {
+              "Access-Control-Allow-Origin": "*",
+              authorization: "b5fff1337ab14429b7880d5678c94651",
+              "Content-Type": "application/json"
+            },
+            success: function(data) {
+              alert(data.message);
+            }
+          });
+        });
+
+        var baseurl = "";
+        if (window.location.hostname === "localhost") {
+          baseurl = "ws://localhost:82";
+        } else {
+          baseurl = "wss://fish.ypcxpt.com";
+        }
+
+        var ws = new WebSocket(
+          baseurl + "?token=b5fff1337ab14429b7880d5678c94651"
+        );
+        ws.onopen = function() {
+          console.log("ws", "OPENED");
+        };
+        ws.onmessage = function(ev) {
+          if (JSON.parse(ev.data).device_mac === "b827eb170977") {
+            $("#log").val(ev.data);
+          }
+          console.log(ev.data);
+        };
+        ws.onerror = function(err) {
+          console.error(err);
+        };
+        ws.onclose = function(ev) {
+          console.log("ws", "closed", ev.code, ev.reason, ev.wasClean);
+        };
+      });
+    </script>
+  </head>
+  <body>
+    <textarea id="log" style="width:100%; margin: 12px; height: 141px;">
+    </textarea>
+    <br />
+    <input id="client" value="" />
+    <input id="duration" value="1000" />
+    <select id="io_code">
+      <option value="lamp1" selected>灯1</option>
+      <option value="lamp2" disabled>灯2</option>
+      <option value="pump1">水泵</option>
+      <option value="aerator1">增氧机1</option>
+      <option value="aerator2">增氧机2</option
+      ><option value="feeder1">投喂机</option>
+    </select>
+    <button id="open_btn">
+      打开
+    </button>
+    <button id="close_btn">
+      关闭
+    </button>
+  </body>
+</html>
