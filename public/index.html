@@ -1,12 +1,408 @@
 <html>
   <head>
     <title>智慧养殖-小龙鱼科技有限公司</title>
+    <style>
+      body {
+        margin: 0px auto 30px auto;
+      }
+      footer {
+          position: fixed;
+    bottom: 0px;
+    left: 0px;
+    right: 0px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    background-color: #636b75;
+    color: #e6e6e6;
+    font-size: smaller;
+      }
+      footer a{
+        color: white;
+        font-style: oblique;
+      }
+      .grid {
+        box-sizing: border-box;
+            clear: both;
+      }
+      .grid .content {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 12px;
+        box-sizing: border-box;
+      }
+      .logo {
+        width: 60px;
+        height: 60px;
+        outline: none;
+        display: inline-block;
+        background-image: url(./images/logo.png);
+        background-size: 60px 60px;
+        background-repeat: no-repeat;
+      }
+      header.grid {
+        /* background-color: #2c303b; */
+        background: #2c3e50; /* fallback for old browsers */
+        background: -webkit-linear-gradient(
+          to right,
+          #717c87,
+          #1c2327,
+          #2c3e50
+        );
+        background: linear-gradient(to right, #717c87, #1c2327, #2c3e50);
+      }
+
+      header .by {
+        display: inline-block;
+        vertical-align: top;
+      }
+
+      header h3 {
+        margin: 0;
+        border-bottom: 1px solid #616161;
+        color: white;
+        padding-bottom: 6px;
+        font-size: 22px;
+      }
+      header h5 {
+        margin: 0;
+        padding-top: 3px;
+        color: aliceblue;
+        font-style: italic;
+        font-weight: 500;
+      }
+      header ul {
+        list-style: none;
+        line-height: 60px;
+        float: right;
+        margin: 0px;
+      }
+      header ul li {
+        display: inline-block;
+      }
+      header li a {
+        outline: none;
+        color: azure;
+        margin-left: 50px;
+        font-size: 18px;
+      }
+
+      .grid.product {
+        background-image: url(images/bg4.png);
+        height: 560px;
+        background-size: cover;
+        background-position: center;
+        color: black;
+      }
+      .grid.product .hz{
+        display: inline-block;
+        height: 300px;
+        width: 300px;
+        background-image: url(./images/h1.png);
+        background-size: cover;
+      }
+
+    span.gn{
+        display: inline-block;
+        width: 160px;
+        height: 100px;
+        text-align: center;
+        margin: 12px;
+        background-position: center bottom;
+        background-size: 80px;
+        background-repeat: no-repeat;
+    }
+    span.gn.app{
+        background-image: url(./images/app.png);
+    }
+    span.gn label{
+      font-size: 16px;
+    }
+    span.gn.cam{
+        background-image: url(./images/sxt.png);
+    }
+    span.gn.ds{
+        background-image: url(./images/dsrw.png);
+    }
+    span.gn.sz{
+        background-image: url(./images/cgq.png);
+    }
+    span.gn.bb{
+        background-image: url(./images/bb.png);
+    }
+    .search-panel{
+      width: 500px;
+      margin: 24px auto;
+    }
+    .search-panel input{
+        font-size: 20px;
+        padding: 12px;
+        height: 68px;
+        width: 400px;
+        outline: none;
+        border: 1px solid #ccc;
+        border-top-left-radius: 12px;
+        border-bottom-left-radius: 12px;
+    }
+    .search-panel button{
+      font-size: 20px;
+      padding: 12px;
+      height: 68px;
+      position: relative;
+      margin-left: -1px;
+      width: 100px;
+      outline: none;
+      border: 1px solid #ccc;
+      border-top-right-radius: 12px;
+      border-bottom-right-radius: 12px;
+    }
+    .smallgn{
+      display: inline-block;
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    margin: 12px;
+    background-position: center bottom;
+    background-size: 50px;
+    background-repeat: no-repeat;
+    }
+    .smallgn.xh{
+        background-image: url(./images/ic/xh.png);
+    }
+    .smallgn.scrq{
+        background-image: url(./images/ic/scrq.png);
+    }
+    .smallgn.bxq{
+        background-image: url(./images/ic/bxq.png);
+    }
+    .smallgn.wxjl{
+        background-image: url(./images/ic/wxjl.png);
+    }
+
+    .content .fwzc{
+      float: left;
+       width: 780px;
+       height: 540px;
+    /* border: 1px solid #ccc; */
+    padding: 12px 12px 24px 12px;
+    box-sizing: border-box;
+    /* border-radius: 12px; */
+    }
+    .content .zlxz{
+         float: right;
+    width: 360px;
+    height: 540px;
+    /* border: 1px solid #ccc; */
+    padding: 12px 12px 24px 12px;
+    box-sizing: border-box;
+    border-radius: 12px;
+    background-color: rgba(0, 0, 0, 0.43);
+    }
+    .grid.jszc{
+      background-image: url(./images/bg.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 700px;
+    color: white;
+    }
+    .grid.jszc h3{
+      text-align: center;
+    }
+    .zlxz ul{
+      list-style: cjk-ideographic;
+    width: 300px;
+    margin: 60px auto;
+    }
+    .zlxz a{
+      color: white;
+      outline: none;
+    }
+    .grid.sbcx{
+      height: 360px;
+    }
+    .lxr{
+    float: left;
+    height: 500px;
+    width: 360px;
+    vertical-align: bottom;
+    }
+    .address{
+     float: right;
+    height: 500px;
+    width: 800px;
+    background-image: url(./images/address.png);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-radius: 12px;
+    }
+    .clear{
+      clear: both;
+    }
+    .grid.lxwm{
+         background-color: #e3effa;
+    height: 600px;
+    }
+    </style>
   </head>
   <body>
-    <h1>欢迎访问</h1>
-    <footer>
-      Copyright © 2018-2019 ypcxpt.com 备案号：
-      <a href="http://www.beian.miit.gov.cn">豫ICP备18044328号</a>
+    <header class="grid">
+      <div class="content">
+        <a class="logo" href="#"> </a>
+        <div class="by">
+          <h3>小龙鱼科技</h3>
+          <h5>和你一起做好渔业养殖</h5>
+        </div>
+        <ul>
+          <li><a href="#">产品介绍</a></li>
+          <li><a href="#">技术支持</a></li>
+          <li><a href="#">公司简介</a></li>
+          <li><a href="#">联系我们</a></li>
+        </ul>
+      </div>
+    </header>
+    <div class="grid product">
+      <div class="content">
+        <h2>S1渔场物联盒</h2>
+        <table style="margin: 0px auto; border:none;">
+          <tr>
+            <td colspan="2" style="    text-align: center;">
+              <span class="gn app"><label>APP控制</label></span>
+              <span class="gn cam"><label>支持onvif摄像头</label></span>
+              <span class="gn ds"><label>定时任务</label></span>
+              <span class="gn sz"><label>水质实时监控提醒</label></span>
+              <span class="gn bb"><label>报表</label></span>
+            </td>
+          </tr>
+          <tr>
+            <td  style="text-align: center;">
+              <div class="hz"></div>
+            </td>
+            <td>
+              <span>
+                参数：
+                <br/>
+                尺寸 260mm*180mm
+                <br/>
+                颜色 红，绿，青，黑
+              <br/>
+                接口 水泵供电*1，增氧机*2，照明灯*2，投喂机*3
+                <br/>
+                支持单相电/三相四线
+              </span>
+            </td>
+          </tr>
+        </table>
+        </div>
+      </div>
+    </div>
+    <div class="grid sbcx">
+      <div class="content">
+        <h2>设备查询</h2>
+        <div class="search-panel">
+        <input placeholder="输入产品编号" /><button>搜索</button>
+      </div>
+      <div style="text-align: center;">
+          <span class="smallgn xh">
+            产品型号
+          </span>
+          <span class="smallgn scrq">
+            生产日期
+          </span>
+          <span class="smallgn bxq">
+            保修期
+          </span>
+          <span class="smallgn wxjl">
+            维修记录
+          </span>
+        </div>
+    </div>
+    </div>
+        <div class="grid jszc">
+      <div class="content">
+        <h2>技术支持</h2>
+        <div class="fwzc">
+        <h3>服务政策</h3>
+        <div style="font-size: 20px;">
+          小龙鱼科技依据《中华人民共和国部分商品修理更换退货责任规定》 对用户提供“包修，包换，包退”服务。<br/><br/>
+<i>1、60天内享受退换货</i><br/>
+自购机之日起7日内，若设备出现国家三包规定所列的非人为损坏性能故障，您可以选择维修或更换同型号同规格的设
+备，或者选择退货。<br/><br/>
+<i>2、2年主机质保</i><br/>
+自购机之日起16日至1年内，若主机设备（不包含赠品）出现国家三包规定所列的非人为损坏性能故障，我们将为您免费维修，不能维修的
+情况免费更换配件。（邮寄费用客户承担）<br/><br/>
+<i>3、5年免费维修</i><br/>
+自购机之日起1年至5年内，若设备出现国家三包规定所列的非人为损坏性能故障，我们提供免费维修服务。如需更换配
+件则按小龙鱼科技有限公司收费标准收费。（邮寄费用客户承担）<br/>
+        </div>
+        </div>
+        <div class="zlxz">
+          <h3>资料下载</h3>
+          <ul>
+            <li><a href="#">S1渔场物联盒使用说明.pdf</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+        <div class="grid">
+      <div class="content">
+
+      </div>
+    </div>
+    <div class="grid">
+      <div class="content">
+        <h2>关于我们</h2>
+        <div>
+开封小龙鱼科技有限公司，成立于2018年，位于开封市杞县地区，是专业从事渔业智能化产品研发与制造、鱼塘工程规划与设计的高新技术企业。<br/>
+主营产品：规模化渔场规划设计、渔场自动饲喂、抽水、增氧、水质指标检测系统。<br/>
+在2年的努力设计研发过程中，我们始终坚持以"以创新技术推动团队生机，以优质服务打造品牌"为目标，产品逐步达到或接近国际水平。<br/>
+<br/>
+售前服务承诺：<br/>
+1.提供特殊需求产品设计、制造，满足客户的个性化需要。<br/>
+2.公司严格按着合同约定安排生产、发运，保证按着合同约定时间供货。<br/>
+企业文化是社会文化体系中的一个有机的重要组成部分，是民族文化和现代意识在企业内部的综合反映和表现，是为一个企业所信奉的主要价值观，诸如进取、守势或是发展等。这些价值观构成公司员工活力、意见和行为的规范。<br/>
+企业精神：求实进取、团结奉献、客户至上、信誉保障<br/>
+经营理念：以人为本、创新求实<br/>
+质量文化：更多倾注、更高标准、精益求精、科学发展<br/>
+服务理念：追求顾客满意<br/>
+品牌文化：创民族工业的世界品牌<br/>
+用人文化：知人善任、任人唯贤、人尽其才、相辅相成
+        </div>
+      </div>
+    </div>
+        <div class="grid lxwm">
+      <div class="content">
+       
+        <div class="lxr">
+           <h2>联系我们</h2>
+开封市小龙鱼科技有限公司<br/><br/>
+技术部<br/>
+联系人：李先生<br/>
+电话：18616514687<br/>
+联系人：徐先生<br/>
+电话：18016373947<br/><br/>
+售后部<br/>
+联系人：曹女士<br/>
+电话：13523530964<br/><br/>
+销售部<br/>
+联系人：王先生<br/>
+电话：18271489469<br/>
+<br/>
+公司邮箱：newbreach@live.com<br/>
+公司地址：河南省开封市龙亭区经济开发区三大街新龙御都国际10号楼2#2603<br/>
+        </div>
+        <div class="address">
+&nbsp;
+        </div>
+      </div>
+    </div>
+    <div class="clear"></div>
+    <footer class="grid">
+      <div class="content" style="padding: 0;">
+        版权所有 © 2019 开封市小龙鱼科技有限公司 备案号:
+        <a href="http://www.beian.miit.gov.cn">豫ICP备18044328号</a>
+      </div>
     </footer>
   </body>
 </html>
