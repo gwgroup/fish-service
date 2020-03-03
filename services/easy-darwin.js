@@ -18,6 +18,6 @@ function canBeRelease(q, cb) {
     });
 }
 module.exports = { canBeRelease };
-// canBeRelease('rtsp://ed.ypcxpt.com/b827ebe99675/192168247/profile_2', (err, result) => {
+// canBeRelease('rtsp://ed.smartbreed.cn/b827ebe99675/192168247/profile_2', (err, result) => {
 //   console.log(err, result);
 // });
