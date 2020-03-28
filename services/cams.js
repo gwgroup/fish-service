@@ -64,7 +64,7 @@ function scan(params, cb) {
       return cb(new util.BusinessError(result.error.code, result.error.message));
     }
     cb(undefined, result.data);
-  }, 20000);
+  }, 30000);
 }
 
 /**
