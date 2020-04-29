@@ -4,6 +4,7 @@ var fs = require('fs'),
   downloadBaseUrl = require('../config/index').openUrls.firmwareUrl,
   adapter = require('../adapter'),
   util = require('../utils/index'),
+  MysqlHelper = util.MysqlHelper,
   ACTION_CODES = Object.freeze({ GET_VERSION_INFO: 9101, UPGRADE: 9102 });
 /**
  * 查询新的固件
@@ -12,24 +13,48 @@ var fs = require('fs'),
  * @param {Function} cb 返回md5，下载url，version
  */
 function check(mac, version, cb) {
+  //0.查询设备型号
   //1.查询目录是否有比当前更新的版本
   //2.如果没有返回
   //3.如果有读取json内容，拼接url返回
-  fs.readdir(firmwareDir, (err, files) => {
-    if (err) { return cb(err); }
-    if (files.length === 0) {
+  searchDeviceModel(mac, (err, model) => {
+    if (err || model === null) {
       return cb(undefined, null);
     }
-    files.sort();
-    let lastVersion = files[files.length - 1];
-    if (version >= lastVersion) {
-      return cb(undefined, null);
-    }
-    let url = `${downloadBaseUrl}${lastVersion}/fish-client.tar`;
-    let info = JSON.parse(fs.readFileSync(path.join(firmwareDir, lastVersion, 'info.json')));
-    cb(undefined, { version: lastVersion, url, md5: info.md5, describe: info.describe });
-    console.log('firmware check', mac, version, lastVersion);
+    let checkPath = path.join(firmwareDir, model);
+    fs.readdir(checkPath, (err, files) => {
+      if (err) { return cb(err); }
+      if (files.length === 0) {
+        return cb(undefined, null);
+      }
+      files.sort();
+      let lastVersion = files[files.length - 1];
+      if (version >= lastVersion) {
+        return cb(undefined, null);
+      }
+      let url = `${downloadBaseUrl}${model}/${lastVersion}/fish-client.tar`;
+      let info = JSON.parse(fs.readFileSync(path.join(checkPath, lastVersion, 'info.json')));
+      cb(undefined, { version: lastVersion, url, md5: info.md5, describe: info.describe });
+      console.log('firmware check', mac, version, lastVersion);
+    });
   });
+}
+
+/**
+ * 根据设备标识查询设备型号
+ * @param {String} mac 
+ * @param {Function} cb 
+ */
+function searchDeviceModel(mac, cb) {
+  MysqlHelper.query(
+    `SELECT \`model\`  FROM  \`fish\`.\`f_device\` WHERE device_mac=?;`,
+    [mac],
+    (err, result) => {
+      if (err) {
+        return cb(err);
+      }
+      cb(undefined, result.length === 0 ? null : result[0].model);
+    });
 }
 
 /**
